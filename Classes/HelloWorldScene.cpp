@@ -21,10 +21,10 @@ bool HelloWorld::init()
 
     //////////////////////////////
     // 1. super init first
-    auto visibleSize = Director::getInstance()->getVisibleSize();
+    auto visibleSize = Director::getInstance()->getVisibleSize();//获取屏幕尺寸和原点坐标
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto sprite = Sprite::create("scene_bg.png");
+	auto sprite = Sprite::create("scene_bg.png");//放置开始界面背景
 	if (sprite == nullptr)
 	{
 		problemLoading("scene_bg.png");
@@ -33,88 +33,71 @@ bool HelloWorld::init()
 	sprite->setScale(0.4);
 	this->addChild(sprite, 0);
 
+	//放置标题 开心消消乐
+	auto title = Sprite::create("title.png");
+	if(title == nullptr)
+	{
+		problemLoading("title.png");
+	}
+	title->setPosition(Vec2(visibleSize.width / 1.95 + origin.x, visibleSize.height / 1.5 + origin.y));
+	title->setScale(0.5);
+	this->addChild(title, 1);
+
+	//放置排行榜按钮，用于切换排行榜
+	auto rankingItem = MenuItemImage::create("ranking.png", 
+		                                     "ranking2.png", 
+		                                     CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+	if (rankingItem == nullptr ||
+		rankingItem->getContentSize().width <= 0 ||
+		rankingItem->getContentSize().height <= 0)
+	{
+		problemLoading("ranking.png,ranking2.png");
+	}
+	rankingItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2.6));
+	rankingItem->setScale(0.4);
+
+	//放置背包按钮，切换到背包界面
+	auto bagItem = MenuItemImage::create("bag.png",
+		                                 "bag2.png",
+		                                 CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+	if (bagItem == nullptr ||
+		bagItem->getContentSize().width <= 0 ||
+		bagItem->getContentSize().height <= 0)
+	{
+		problemLoading("bag.png,bag2.png");
+	}
+	bagItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 3.5));
+	bagItem->setScale(0.3);
+
+	//放置开始游戏按钮，用于切换开始界面和游戏场景
 	auto startItem = MenuItemImage::create("btn_start01.png", 
 		                                   "btn_start02.png", 
 		                                   CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+	if (startItem == nullptr ||
+		startItem->getContentSize().width <= 0 ||
+		startItem->getContentSize().height <= 0)
+	{
+		problemLoading("btn_start01.png and byn_start02.png");
+	}
 	startItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	startItem->setScale(0.5);
 
-	auto closeItem = MenuItemImage::create("CloseNormal.png", 
-		                                   "CloseSeleted.png", 
+	//放置结束游戏按钮，用于结束游戏
+	auto closeItem = MenuItemImage::create("gamefinish.png", 
+		                                   "gamefinish2.png", 
 		                                   CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-	closeItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 6));
+	if (closeItem == nullptr ||
+		closeItem->getContentSize().width <= 0 ||
+		closeItem->getContentSize().height <= 0)
+	{
+		problemLoading("'gamefinish.png' and 'gamefinish2.png'");
+	}
+	closeItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 5));
+	closeItem->setScale(0.3);
 	
-	auto menu = Menu::create(startItem, closeItem, NULL);
+	auto menu = Menu::create(startItem, closeItem, rankingItem, bagItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
-
-	return true;
-
-	/*
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
-
-    // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-
-    if (closeItem == nullptr ||
-        closeItem->getContentSize().width <= 0 ||
-        closeItem->getContentSize().height <= 0)
-    {
-        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
-        float y = origin.y + closeItem->getContentSize().height/2;
-        closeItem->setPosition(Vec2(x,y));
-    }
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    if (label == nullptr)
-    {
-        problemLoading("'fonts/Marker Felt.ttf'");
-    }
-    else
-    {
-        // position the label on the center of the screen
-        label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                                origin.y + visibleSize.height - label->getContentSize().height));
-
-        // add the label as a child to this layer
-        this->addChild(label, 1);
-    }
-
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
-    if (sprite == nullptr)
-    {
-        problemLoading("'HelloWorld.png'");
-    }
-    else
-    {
-        // position the sprite on the center of the screen
-        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-        // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
-    }
-	*/
 	
     return true;
 }
