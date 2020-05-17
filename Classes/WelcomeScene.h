@@ -3,18 +3,19 @@
 
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Scene
+class WelcomeScene : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
     
-    // a selector callback
+    //关闭游戏的回调函数声明
     void menuCloseCallback(cocos2d::Ref* pSender);
-    
-    // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+	//切换到游戏场景的回调函数声明
+	void menuStartCallback(cocos2d::Ref* pSender);
+
+    CREATE_FUNC(WelcomeScene);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
