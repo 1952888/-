@@ -1,21 +1,27 @@
+
 #ifndef _GAME_Scene_H_
 #define _GAME_Scene_H_
 #include"cocos2d.h"
 
-class GameScene:public cocos2d::Layer
+
+class GameScene :public cocos2d::Layer
+
 {
 public:
-	//»ù´¡¹¦ÄÜ
+	//åŸºç¡€åŠŸèƒ½
 	static cocos2d::Scene* createScene();
-	virtual bool init();//³õÊ¼»¯
-	//·µ»Ø¿ªÊ¼ÓÎÏ·½çÃæ
-	void menuBackCallback(cocos2d::Ref*pSender);
+	virtual bool init();//åˆå§‹åŒ–
+	//è¿”å›å¼€å§‹æ¸¸æˆç•Œé¢
+
+	void menuBackCallback(cocos2d::Ref* pSender);
+
 	CREATE_FUNC(GameScene);
-	//ÓÎÏ·¹¦ÄÜ
-	//³õÊ¼»¯ÓÎÏ·½çÃæ
+	//æ¸¸æˆåŠŸèƒ½
+	//åˆå§‹åŒ–æ¸¸æˆç•Œé¢
 	void initMap();
-	//´´½¨¾«Áé
-	void createSprite(int,int);
+	//åˆ›å»ºç²¾çµ
+
+	void createSprite(int, int);
 	Point positionOfItem(int, int);
 };
 

@@ -20,11 +20,11 @@ bool GameScene::init()
 	{
 		return false;
 	}
-	//Ìí¼Ó±³¾°
+	//æ°æ¨“æ–åŠ“
 	auto sprite = Sprite::create("scene_bg.png");
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GANE_SCREEN_HEIGHT / 2));
 	this->addChild(sprite, -1);
-	//Ìí¼Ó·µ»Ø°´Å¥
+	//æ°æ¨“æ®¿éš™åŒè½
 	auto backbutton = MenuItemImage::create("btn_back01.png", "btn_back02.png", CC_CALLBACK_1(GameScene::menuBackCallback, this));
 	backbutton->setPosition(Vec2(GAME_SCREEN_WIDTH - backbutton->getContentSize().width / 2, backbutton->getContentSize().height / 2));
 
@@ -36,12 +36,14 @@ bool GameScene::init()
 }
 
 
-void GameScene::menuBackCallback(Ref*pSender)
+
+void GameScene::menuBackCallback(Ref* pSender)
+
 {
 	auto scene = WelcomeScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
 }
-//³õÊ¼»¯µØÍ¼
+//å ´å®è¶™è¯èŠ
 void GameScene::initMap()
 {
 	for (int i = 0; i < ROWS; i++)
@@ -66,7 +68,9 @@ void GameScene::createSprite(int row, int col)
 
 Point GameScene::positionOfItem(int row, int col)
 {
-	float x = mapLBX + (SPRITE_WIDTH + BOADER_WIDTH)*col + SPRITE_WIDTH / 2;
-	float y = mapLBY + (SPRITE_WIDTH + BOADER_WIDTH)*row + SPRITE_WIDTH / 2;
+	float x = mapLBX + (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
+	float y = mapLBY + (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
+======
+
 	return Point(x, y);
 }
