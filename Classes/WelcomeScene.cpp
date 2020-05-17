@@ -1,22 +1,22 @@
-#include "HelloWorldScene.h"
+#include "WelcomeScene.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
-Scene* HelloWorld::createScene()
+Scene* WelcomeScene::createScene()
 {
-    return HelloWorld::create();
+    return WelcomeScene::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
     printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in WelcomeScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool WelcomeScene::init()
 {
 
     //////////////////////////////
@@ -46,7 +46,7 @@ bool HelloWorld::init()
 	//放置排行榜按钮，用于切换排行榜
 	auto rankingItem = MenuItemImage::create("ranking.png", 
 		                                     "ranking2.png", 
-		                                     CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+		                                     CC_CALLBACK_1(WelcomeScene::menuCloseCallback, this));
 	if (rankingItem == nullptr ||
 		rankingItem->getContentSize().width <= 0 ||
 		rankingItem->getContentSize().height <= 0)
@@ -59,7 +59,7 @@ bool HelloWorld::init()
 	//放置背包按钮，切换到背包界面
 	auto bagItem = MenuItemImage::create("bag.png",
 		                                 "bag2.png",
-		                                 CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+		                                 CC_CALLBACK_1(WelcomeScene::menuCloseCallback, this));
 	if (bagItem == nullptr ||
 		bagItem->getContentSize().width <= 0 ||
 		bagItem->getContentSize().height <= 0)
@@ -72,7 +72,7 @@ bool HelloWorld::init()
 	//放置开始游戏按钮，用于切换开始界面和游戏场景
 	auto startItem = MenuItemImage::create("btn_start01.png", 
 		                                   "btn_start02.png", 
-		                                   CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+		                                   CC_CALLBACK_1(WelcomeScene::menuStartCallback, this));
 	if (startItem == nullptr ||
 		startItem->getContentSize().width <= 0 ||
 		startItem->getContentSize().height <= 0)
@@ -85,7 +85,7 @@ bool HelloWorld::init()
 	//放置结束游戏按钮，用于结束游戏
 	auto closeItem = MenuItemImage::create("gamefinish.png", 
 		                                   "gamefinish2.png", 
-		                                   CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+		                                   CC_CALLBACK_1(WelcomeScene::menuCloseCallback, this));
 	if (closeItem == nullptr ||
 		closeItem->getContentSize().width <= 0 ||
 		closeItem->getContentSize().height <= 0)
@@ -102,16 +102,14 @@ bool HelloWorld::init()
     return true;
 }
 
-
-void HelloWorld::menuCloseCallback(Ref* pSender)
+void WelcomeScene::menuCloseCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
+    //关闭游戏的回调函数
     Director::getInstance()->end();
+}
 
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
-
-
+void WelcomeScene::menuStartCallback(Ref* pSender)
+{
+	auto scene = WelcomeScene::createScene();
+	CCDirector::sharedDirector()->replaceScene(scene);
 }
