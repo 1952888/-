@@ -1,4 +1,11 @@
-#include "SpriteShape.h"
+	#include "SpriteShape.h"
+SpriteShape::SpriteShape()
+	: m_col(0)
+	, m_row(0)
+	, m_imgIndex(0)
+	, m_isNeedRemove(false)
+{
+}
 
 SpriteShape *SpriteShape::create(int row, int col)
 {

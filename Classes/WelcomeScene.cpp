@@ -1,4 +1,5 @@
 #include "WelcomeScene.h"
+#include "GameScene.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
@@ -110,6 +111,6 @@ void WelcomeScene::menuCloseCallback(Ref* pSender)
 
 void WelcomeScene::menuStartCallback(Ref* pSender)
 {
-	auto scene = WelcomeScene::createScene();
+	auto scene = GameScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
 }
