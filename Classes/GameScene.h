@@ -1,31 +1,34 @@
+#ifndef __GAME_SCENE_H__
+#define __GAME_SCENE_H__
 
-#ifndef _GAME_Scene_H_
-#define _GAME_Scene_H_
-#include"cocos2d.h"
+#include "cocos2d.h"
+#include "GameDefine.h"
+
+USING_NS_CC;
+
+class SpriteShape;
 
 
-class GameScene :public cocos2d::Layer
-
+class GameScene : public Layer
 {
 public:
-	//åŸºç¡€åŠŸèƒ½
-	static cocos2d::Scene* createScene();
-	virtual bool init();//åˆå§‹åŒ–
-	//è¿”å›å¼€å§‹æ¸¸æˆç•Œé¢
-
-	void menuBackCallback(cocos2d::Ref* pSender);
+    static Scene* createScene();
+	virtual bool init();  
+	// ³õÊ¼»¯µØÍ¼
+	void initMap();
+	// ´´½¨¾«Áé
+	void createSprite( int row , int col );
+	// ·µ»Ø»¶Ó­½çÃæº¯Êı
+	void menuBackCallback( Ref* pSender );
+	// µÃµ½¶ÔÓ¦ĞĞÁĞ¾«ÁéµÄ×ø±êÖµ
+	Point getposition( int row , int col );
 
 	CREATE_FUNC(GameScene);
-	//æ¸¸æˆåŠŸèƒ½
-	//åˆå§‹åŒ–æ¸¸æˆç•Œé¢
-	void initMap();
-	//åˆ›å»ºç²¾çµ
-
-	void createSprite(int, int);
-	Point positionOfItem(int, int);
+private:
+	// »æÖÆÒ»ÅúÍ¼Æ¬
+	SpriteBatchNode* spriteSheet;
+	// ¶şÎ¬Êı×é
+	SpriteShape* map[ROWS][COLS];
 };
 
-
-
-
-#endif
+#endif // __GAME_SCENE_H__
