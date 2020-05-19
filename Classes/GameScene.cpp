@@ -1,76 +1,92 @@
 #include "GameScene.h"
-#include"GameDefine.h"
-#include"Spriteshapenew.h"
-#include"WelcomeScene.h"
-#include "SimpleAudioEngine.h"
+#include "SpriteShape.h"
+#include "WelcomeScene.h"
 
-USING_NS_CC;
 
-Scene* GameScene::createScene()
-{
-	auto scene = Scene::create();
-	auto layer = GameScene::create();
-	scene->addChild(layer);
+Scene* GameScene::createScene()	{
+    auto scene = Scene::create();
+    auto layer = GameScene::create();
+    scene->addChild(layer);
 	return scene;
 }
 
-bool GameScene::init()
+// ª∂”≠ΩÁ√Ê ≥ı ºªØ∫Ø ˝
+bool GameScene::init()	
 {
-	if (!Layer::init())
+	// œ»≥ı ºªØ∏∏¿‡£¨≤ª≥…π¶∑µªÿfalse
+	if( !Layer::init() )	
 	{
 		return false;
 	}
-	//Ê∞ùÊ®ìÊéñÂäì
+
+	// º”‘ÿplist∫Õpng
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
+    spriteSheet = SpriteBatchNode::create("icon.png");
+    addChild(spriteSheet);
+
+	// ÃÌº”±≥æ∞Õº∆¨
 	auto sprite = Sprite::create("scene_bg.png");
-	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GANE_SCREEN_HEIGHT / 2));
-	this->addChild(sprite, -1);
-	//Ê∞ùÊ®ìÊÆøÈöôÂÅåËÅΩ
-	auto backbutton = MenuItemImage::create("btn_back01.png", "btn_back02.png", CC_CALLBACK_1(GameScene::menuBackCallback, this));
-	backbutton->setPosition(Vec2(GAME_SCREEN_WIDTH - backbutton->getContentSize().width / 2, backbutton->getContentSize().height / 2));
+	sprite->setPosition(Point(GAME_SCREEN_WIDTH/2,GAME_SCREEN_HEIGHT/2));
+    this->addChild(sprite,-1);
 
-	auto menu = Menu::create(backbutton, NULL);
-	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu);
+	// ÃÌº”∑µªÿ∞¥≈•
+	auto backItem = MenuItemImage::create(
+                                           "btn_back01.png",
+                                           "btn_back02.png",
+										   CC_CALLBACK_1(GameScene::menuBackCallback, this));
+	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH-backItem->getContentSize().width/2,backItem->getContentSize().height/2));
+
+	auto menu = Menu::create(backItem, NULL);
+    menu->setPosition(Vec2::ZERO);
+	this -> addChild( menu );
+	
+	initMap();
+
 	return true;
-
 }
 
-
-
-void GameScene::menuBackCallback(Ref* pSender)
-
+// ∑µªÿ∫Ø ˝£¨Ã¯◊™µΩª∂”≠ΩÁ√Ê
+void GameScene::menuBackCallback( Ref* pSender )	
 {
 	auto scene = WelcomeScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
 }
-//Â†¥ÂÆéË∂ôËèØËäû
-void GameScene::initMap()
+
+// ≥ı ºªØµÿÕº
+void GameScene::initMap( )	
 {
-	for (int i = 0; i < ROWS; i++)
+	
+	for( int i = 0 ; i < ROWS ;i++ )
 	{
-		for (int j = 0; j < COLS; j++)
+		for( int j = 0 ; j < COLS ; j++)
 		{
-			createSprite(i, j);
+			createSprite(i,j);
 		}
 	}
 }
 
-static SpriteShape* map[ROWS][COLS];
-static Scene* spriteSheet;
-void GameScene::createSprite(int row, int col)
+// ¥¥Ω®æ´¡È
+void GameScene::createSprite( int row , int col )	
 {
+	
 	SpriteShape* temp = SpriteShape::create(row, col);
-	Point endPosition = positionOfItem(row, col);
-	temp->setPosition(endPosition);
-	spriteSheet->addChild(temp);
-	map[row][col] = temp;
+	
+	// ¥¥Ω®œ¬¬‰∂Øª≠
+	Point endPosition = getposition(row, col);
+	Point startPosition = Point(endPosition.x, endPosition.y + GAME_SCREEN_HEIGHT / 2);
+    temp->setPosition(startPosition);
+	float speed = startPosition.y / (1.5 * GAME_SCREEN_HEIGHT );
+    temp->runAction(MoveTo::create(speed, endPosition));
+    // º”»ÎµΩspriteSheet÷–,µ»¥˝ªÊ÷∆
+    spriteSheet -> addChild(temp);
+
+    map[row][col] = temp;
 }
 
-Point GameScene::positionOfItem(int row, int col)
+// ∏˘æ›––¡–£¨ªÒ»°◊¯±Í÷µ
+Point GameScene::getposition(int row , int col)
 {
-	float x = mapLBX + (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
-	float y = mapLBY + (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
-======
-
-	return Point(x, y);
+	float x = (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
+    float y = (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
+    return Point(x, y);
 }
