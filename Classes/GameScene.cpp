@@ -2,6 +2,263 @@
 #include "SpriteShape.h"
 #include "WelcomeScene.h"
 
+GameScene::GameScene()
+	:spriteSheet(NULL)
+	,isFillSprite(false)
+	,isAction(true)
+{
+}
+
+void GameScene::update(float t)//更新每一帧
+{
+	if (isAction)//如果正在动作，查看是否有其他精灵正在动作
+	{
+		isAction = false;
+		for (int r = 0; r < ROWS; ++r)
+		{
+			for (int c = 0; c < COLS; ++c)
+			{
+				SpriteShape* spr = map[r][c];
+				if (spr && spr->getNumberOfRunningActions() > 0)
+				{
+					isAction = true;
+					break;
+				}
+			}
+		}
+	}
+	if (!isAction)//如果不在动作，查看是否需要填充精灵，如果不需要填充精灵，查看是否要移除精灵
+	{
+		if (isFillSprite)
+		{
+			fillSprite();
+			isFillSprite = false;
+		}
+		else
+		{
+			checkAndRemoveSprite();
+		}
+	}
+}
+
+void GameScene::checkAndRemoveSprite()//查看并移除三连以上的精灵
+{
+	SpriteShape* spr;
+	for (int r = 0; r < ROWS; ++r)
+	{
+		for (int c = 0; c < COLS; ++c)
+		{
+			spr = map[r][c];
+			if (!spr)
+			{
+				continue;
+			}
+			if (spr->getIsNeedRemove())
+			{
+				continue;
+			}
+			std::list<SpriteShape*>colChainList;
+			getColChain(spr, colChainList);
+			
+			std::list<SpriteShape*>rowChainList;
+			getRowChain(spr, rowChainList);
+			//得到较长的List
+			std::list<SpriteShape*>& longerList = colChainList.size() > rowChainList.size() ? colChainList : rowChainList;
+			if (longerList.size() < 3)//如果List小于3，直接跳过
+			{
+				continue;
+			}
+			//遍历longList，把里面的精灵丢到被标记的地方
+			std::list<SpriteShape*>::iterator itList;
+			for (itList = longerList.begin(); itList != longerList.end(); ++itList)
+			{
+				spr = (SpriteShape*)*itList;
+				if (!spr)
+				{
+					continue;
+				}
+				//标记需要删除的精灵
+				markRemove(spr);
+			}
+		}
+	}
+	//删除被标记的精灵
+	removeSprite();
+}
+
+void GameScene::markRemove(SpriteShape* spr)//标记需要删除的精灵
+{
+	if (spr->getIsNeedRemove())//如果已经被标记，则直接返回
+	{
+		return;
+	}
+	spr->setIsNeedRemove(true);
+}
+
+void GameScene::removeSprite()//删除精灵
+{
+	isAction = true;
+	for (int r = 0; r < ROWS; ++r)
+	{
+		for (int c = 0; c < COLS; ++c)
+		{
+			SpriteShape* spr = map[r][c];
+			if (!spr)//如果已经被删除，跳过这次循环
+			{
+				continue;
+			}
+			if (spr->getIsNeedRemove())//如果需要被删除，删除精灵，修改isFillSprite
+			{
+				isFillSprite = true;
+				explodeSprite(spr);
+			}
+		}
+	}
+}
+
+void GameScene::explodeSprite(SpriteShape* spr)//爆炸删除
+{
+	//一个爆炸动作
+	spr->runAction(Sequence::create(ScaleTo::create(0.2f, 0.0),
+		CallFuncN::create(CC_CALLBACK_1(GameScene::actionEndCallBack, this)),
+		NULL));
+}
+
+void GameScene::actionEndCallBack(Node* node)//删除精灵函数
+{
+	SpriteShape* spr = (SpriteShape*)node;
+	map[spr->getRow()][spr->getCol()] = NULL;
+	spr->removeFromParent();
+}
+
+void GameScene::getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList)//获取左右相同精灵的List
+{
+	chainList.push_back(spr);
+
+	int neighborCol = spr->getCol() - 1;//向左
+	while (neighborCol >= 0)
+	{
+		SpriteShape* neighborSprite = map[spr->getRow()][neighborCol];
+		if (neighborSprite &&
+			(neighborSprite->getImgIndex() == spr->getImgIndex()) &&
+			!neighborSprite->getIsNeedRemove())
+		{
+			chainList.push_back(neighborSprite);
+			neighborCol--;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	neighborCol = spr->getCol() + 1;//向右
+	while (neighborCol < COLS)
+	{
+		SpriteShape* neighborSprite = map[spr->getRow()][neighborCol];
+		if (neighborSprite &&
+			(neighborSprite->getImgIndex() == spr->getImgIndex()) &&
+			!neighborSprite->getIsNeedRemove())
+		{
+			chainList.push_back(neighborSprite);
+			neighborCol++;
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+void GameScene::getRowChain(SpriteShape* spr, std::list<SpriteShape*>&chainList)//获取上下相同精灵的List
+{
+	chainList.push_back(spr);
+
+	int neighborRow = spr->getRow() - 1;//向上
+	while (neighborRow >= 0)
+	{
+		SpriteShape* neighborSprite = map[neighborRow][spr->getCol()];
+		if (neighborSprite &&
+			(neighborSprite->getImgIndex() == spr->getImgIndex()) &&
+			!neighborSprite->getIsNeedRemove())
+		{
+			chainList.push_back(neighborSprite);
+			neighborRow--;
+		}
+		else
+		{
+			break;
+		}
+	}
+	
+	neighborRow = spr->getRow() + 1;//向下
+	while (neighborRow < ROWS)
+	{
+		SpriteShape* neighborSprite = map[neighborRow][spr->getCol()];
+		if (neighborSprite &&
+			(neighborSprite->getImgIndex() == spr->getImgIndex()) &&
+			!neighborSprite->getIsNeedRemove())
+		{
+			chainList.push_back(neighborSprite);
+			neighborRow++;
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+void GameScene::fillSprite()//填充精灵，是先让已存在的精灵下落，之后在创建新的精灵
+{
+	isAction = true;
+
+	int* colEmptyInfo = (int*)malloc(sizeof(int) * COLS);//创建变量，记录相应列数移除的数量
+	memset((void*)colEmptyInfo, 0, sizeof(int) * COLS);
+
+	SpriteShape* spr = NULL;
+	for (int c = 0; c < COLS; ++c)//遍历map
+	{
+		//自底向上
+		int removedSpriteOfCol = 0;
+		for (int r = 0; r < ROWS; ++r)
+		{
+			spr = map[r][c];
+			if (spr == NULL)//如果这个位置没有精灵，变量自增
+			{
+				++removedSpriteOfCol;
+			}
+			else//在第一个出现精灵的位置，让精灵下落
+			{
+				if (removedSpriteOfCol > 0)
+				{
+					int newRow = r - removedSpriteOfCol;
+					map[newRow][c] = spr;
+					map[r][c] = NULL;
+
+					Point startPosition = spr->getPosition();
+					Point endPosition = getposition(newRow, c);
+					float speed = (startPosition.y - endPosition.y) / GAME_SCREEN_HEIGHT * 3;
+					spr->stopAllActions();
+					spr->runAction(CCMoveTo::create(speed, endPosition));
+
+					spr->setRow(newRow);
+				}
+			}
+		}
+		colEmptyInfo[c] = removedSpriteOfCol;//记录每列被消除的精灵数量
+	}
+
+	for (int c = 0; c < COLS; ++c)//创建新的精灵下落
+	{
+		for (int r = ROWS - colEmptyInfo[c]; r < ROWS; ++r)
+		{
+			createSprite(r, c);
+		}
+	}
+
+	free(colEmptyInfo);
+}
 
 Scene* GameScene::createScene()	{
     auto scene = Scene::create();
@@ -23,6 +280,9 @@ bool GameScene::init()
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
     spriteSheet = SpriteBatchNode::create("icon.png");
     addChild(spriteSheet);
+	mapLBX = (GAME_SCREEN_WIDTH - SPRITE_WIDTH * COLS - (COLS - 1) * BOADER_WIDTH) / 2;
+	mapLBY = (GAME_SCREEN_HEIGHT - SPRITE_WIDTH * ROWS - (ROWS - 1) * BOADER_WIDTH) / 2;
+
 
 	// 添加背景图片
 	auto sprite = Sprite::create("scene_bg.png");
@@ -41,6 +301,7 @@ bool GameScene::init()
 	this -> addChild( menu );
 	
 	initMap();
+	scheduleUpdate();
 
 	return true;
 }
@@ -89,4 +350,11 @@ Point GameScene::getposition(int row , int col)
 	float x = (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
     float y = (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
     return Point(x, y);
+}
+
+Point GameScene::positionOfItem(int row, int col)
+{
+	float x = mapLBX + (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
+	float y = mapLBY + (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
+	return Point(x, y);
 }
