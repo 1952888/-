@@ -16,6 +16,7 @@ public:
     CC_SYNTHESIZE(int, m_col, Col);
     CC_SYNTHESIZE(int, m_imgIndex, ImgIndex);
 	CC_SYNTHESIZE(bool, m_isNeedRemove, IsNeedRemove);
+
 private:
 	bool IsNeedRemove;
 };

@@ -6,7 +6,6 @@ GameScene::GameScene()
 	:spriteSheet(NULL)
 	,isFillSprite(false)
 	,isAction(true)
-	,isTouchEna(true)
 {
 }
 
@@ -28,9 +27,6 @@ void GameScene::update(float t)//更新每一帧
 			}
 		}
 	}
-
-	// 如果精灵正在移动中，忽视触摸事件
-	isTouchEna = !isAction;
 	if (!isAction)//如果不在动作，查看是否需要填充精灵，如果不需要填充精灵，查看是否要移除精灵
 	{
 		if (isFillSprite)
@@ -43,7 +39,6 @@ void GameScene::update(float t)//更新每一帧
 			checkAndRemoveSprite();
 		}
 	}
-
 }
 
 void GameScene::checkAndRemoveSprite()//查看并移除三连以上的精灵
@@ -265,214 +260,6 @@ void GameScene::fillSprite()//填充精灵，是先让已存在的精灵下落，之后在创建新的精
 	free(colEmptyInfo);
 }
 
-
-
-// 开始触摸
-bool GameScene::onTouchBegan(Touch *touch, Event *unused) 
-{
-	startSprite = NULL;
-	endSprite = NULL;
-
-	if (isTouchEna) 
-	{
-		auto position= touch->getLocation();
-		startSprite = spriteOfPoint(&position);
-	}
-	return isTouchEna;
-}
-
-// 触摸后移动的方向
-void GameScene::onTouchMoved(Touch *touch, Event *unused)
-{
-	// 如果没有初始精灵 或者 触摸事件不可行，直接返回
-	if (!startSprite || !isTouchEna)
-	{
-		return;
-	}
-
-
-	// 获取 初始精灵 的行列
-	int row = startSprite->getRow();
-	int col = startSprite->getCol();
-
-	// 获取移动到的 点 的位置
-	auto location = touch->getLocation();
-	auto halfSpriteWidth = SPRITE_WIDTH / 2;
-	auto halfSpriteHeight = SPRITE_WIDTH / 2;
-
-	auto  upRect = Rect(startSprite->getPositionX() - halfSpriteWidth,
-		startSprite->getPositionY() + halfSpriteHeight,
-		SPRITE_WIDTH,
-		SPRITE_WIDTH);
-
-	// 判断是在向哪个方向移动，
-	if (upRect.containsPoint(location)) 
-	{
-		row++;
-		if (row < ROWS)
-		{
-			endSprite = map[row][col];
-		}
-		swapSprite();
-		return;
-	}
-
-	auto  downRect = Rect(startSprite->getPositionX() - halfSpriteWidth,
-		startSprite->getPositionY() - (halfSpriteHeight * 3),
-		SPRITE_WIDTH,
-		SPRITE_WIDTH);
-
-	if (downRect.containsPoint(location))
-	{
-		row--;
-		if (row >= 0) 
-		{
-			endSprite = map[row][col];
-		}
-		swapSprite();
-		return;
-	}
-
-	auto  leftRect = Rect(startSprite->getPositionX() - (halfSpriteWidth * 3),
-		startSprite->getPositionY() - halfSpriteHeight,
-		SPRITE_WIDTH,
-		SPRITE_WIDTH);
-
-	if (leftRect.containsPoint(location)) 
-	{
-		col--;
-		if (col >= 0) 
-		{
-			endSprite = map[row][col];
-		}
-		swapSprite();
-		return;
-	}
-
-	auto  rightRect = Rect(startSprite->getPositionX() + halfSpriteWidth,
-		startSprite->getPositionY() - halfSpriteHeight,
-		SPRITE_WIDTH,
-		SPRITE_WIDTH);
-
-	if (rightRect.containsPoint(location)) 
-	{
-		col++;
-		if (col < COLS) 
-		{
-			endSprite = map[row][col];
-		}
-		swapSprite();
-		return;
-	}
-
-	// 否则，并非一个有效的移动
-}
-
-// 根据触摸的点位置，返回是地图中哪个精灵
-SpriteShape *GameScene::spriteOfPoint(Point *point)
-{
-	SpriteShape *spr = NULL;
-	Rect rect = Rect(0, 0, 0, 0);
-	Size sz;
-	sz.height = SPRITE_WIDTH;
-	sz.width = SPRITE_WIDTH;
-
-	for (int i = 0; i < ROWS; i++)
-	{
-		for (int j = 0; j < COLS; j++)
-		{
-			spr = map[i][j];
-			if (spr) 
-			{
-				rect.origin.x = spr->getPositionX() - (SPRITE_WIDTH / 2);
-				rect.origin.y = spr->getPositionY() - (SPRITE_WIDTH / 2);
-
-				rect.size = sz;
-				if (rect.containsPoint(*point)) 
-				{
-					return spr;
-				}
-			}
-		}
-	}
-
-	return NULL;
-}
-
-// 交换精灵
-void GameScene::swapSprite() 
-{
-	// 移动中，不允许再次触摸，执行动作设置为true
-	isAction = true;
-	isTouchEna = false;
-
-	// 初始精灵 和 终止精灵 均不能为空
-	if (!startSprite || !endSprite) 
-	{
-		return;
-	}
-
-	Point posOfSrc = startSprite->getPosition();
-	Point posOfDest = endSprite->getPosition();
-
-	float time = 0.2;
-
-	// 在数组中交换位置
-	map[startSprite->getRow()][startSprite->getCol()] = endSprite;
-	map[endSprite->getRow()][endSprite->getCol()] = startSprite;
-
-	int tmpRow = startSprite->getRow();
-	int tmpCol = startSprite->getCol();
-	startSprite->setRow(endSprite->getRow());
-	startSprite->setCol(endSprite->getCol());
-	endSprite->setRow(tmpRow);
-	endSprite->setCol(tmpCol);
-
-	// 检查是否能消除
-	std::list<SpriteShape *> colChainListOfFirst;
-	getColChain(startSprite, colChainListOfFirst);
-
-	std::list<SpriteShape *> rowChainListOfFirst;
-	getRowChain(startSprite, rowChainListOfFirst);
-
-	std::list<SpriteShape *> colChainListOfSecond;
-	getColChain(endSprite, colChainListOfSecond);
-
-	std::list<SpriteShape *> rowChainListOfSecond;
-	getRowChain(endSprite, rowChainListOfSecond);
-
-	if (colChainListOfFirst.size() >= 3
-		|| rowChainListOfFirst.size() >= 3
-		|| colChainListOfSecond.size() >= 3
-		|| rowChainListOfSecond.size() >= 3) {
-		// 如果能够消除，仅仅进行移动（不会移动回来）
-		startSprite->runAction(MoveTo::create(time, posOfDest));
-		endSprite->runAction(MoveTo::create(time, posOfSrc));
-		return;
-	}
-
-	// 不能消除，则移动过去还要返回
-	map[startSprite->getRow()][startSprite->getCol()] = endSprite;
-	map[endSprite->getRow()][endSprite->getCol()] = startSprite;
-
-	tmpRow = startSprite->getRow();
-	tmpCol = startSprite->getCol();
-	startSprite->setRow(endSprite->getRow());
-	startSprite->setCol(endSprite->getCol());
-	endSprite->setRow(tmpRow);
-	endSprite->setCol(tmpCol);
-
-	startSprite->runAction(Sequence::create(
-		MoveTo::create(time, posOfDest),
-		MoveTo::create(time, posOfSrc),
-		NULL));
-	endSprite->runAction(Sequence::create(
-		MoveTo::create(time, posOfSrc),
-		MoveTo::create(time, posOfDest),
-		NULL));
-}
-
-
 Scene* GameScene::createScene()	{
     auto scene = Scene::create();
     auto layer = GameScene::create();
@@ -497,7 +284,6 @@ bool GameScene::init()
 	mapLBY = (GAME_SCREEN_HEIGHT - SPRITE_WIDTH * ROWS - (ROWS - 1) * BOADER_WIDTH) / 2;
 
 
-
 	// 添加背景图片
 	auto sprite = Sprite::create("scene_bg.png");
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH/2,GAME_SCREEN_HEIGHT/2));
@@ -514,17 +300,9 @@ bool GameScene::init()
     menu->setPosition(Vec2::ZERO);
 	this -> addChild( menu );
 	
-	
-	//添加监听器
-
-	// 触摸事件处理
-	auto touchListener = EventListenerTouchOneByOne::create();
-	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-	touchListener->setSwallowTouches(true);
 	initMap();
 	scheduleUpdate();
+
 	return true;
 }
 
