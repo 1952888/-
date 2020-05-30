@@ -7,6 +7,7 @@ GameScene::GameScene()
 	,isFillSprite(false)
 	,isAction(true)
 	,isTouchEna(true)
+	,m_frequency(30)
 	,m_score(0)
 {
 }
@@ -43,10 +44,131 @@ void GameScene::update(float t)//更新每一帧
 		{
 			checkAndRemoveSprite();
 		}
+		if (!checkIfDeadMap())
+		{
+			for (int r = 0; r < ROWS; ++r)
+			{
+				for (int c = 0; c < COLS; ++c)
+				{
+					markRemove(map[r][c]);
+				}
+			}
+			removeSprite();
+			m_score -= 1080;
+		}
 	}
-	Label *labelScore = (Label *)this->getChildByTag(10);
+	Label* labelScore = (Label*)this->getChildByTag(10);
 
 	labelScore->setString(StringUtils::format("Score: %d ", m_score));
+}
+
+bool GameScene::checkIfDeadMap()//查看是否是死地图
+{
+	for (int r = 0; r < ROWS; ++r)//一共12种情况，如果全不满足则返回false
+	{
+		for (int c = 0; c < COLS; ++c)
+		{
+			if (r + 1 < ROWS)
+			{
+				if (map[r][c]->getImgIndex() == map[r + 1][c]->getImgIndex())
+				{
+					auto currentImg = map[r][c]->getImgIndex();
+					if (r - 2 >= 0)
+					{
+						if (map[r - 2][c]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (r - 1 >= 0 && c - 1 >= 0)
+					{
+						if (map[r - 1][c - 1]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (r - 1 >= 0 && c + 1 < COLS)
+					{
+						if (map[r - 1][c + 1]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (r + 3 < ROWS)
+					{
+						if (map[r + 3][c]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (r + 2 < ROWS && c - 1 >= 0)
+					{
+						if (map[r + 2][c - 1]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (r + 2 < ROWS && c + 1 < COLS)
+					{
+						if (map[r + 2][c + 1]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+				}
+			}
+			if (c + 1 < COLS)
+			{
+				if (map[r][c]->getImgIndex() == map[r][c + 1]->getImgIndex())
+				{
+					auto currentImg = map[r][c]->getImgIndex();
+					if (c - 2 >= 0)
+					{
+						if (map[r][c - 2]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (c - 1 >= 0 && r - 1 >= 0)
+					{
+						if (map[r - 1][c - 1]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (c - 1 >= 0 && r + 1 < ROWS)
+					{
+						if (map[r + 1][c - 1]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (c + 3 < COLS)
+					{
+						if (map[r][c + 3]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (c + 2 < COLS && r + 1 < ROWS)
+					{
+						if (map[r + 1][c + 2]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+					if (c + 2 < COLS && r - 1 >= 0)
+					{
+						if (map[r - 1][c + 2]->getImgIndex() == currentImg)
+						{
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
 
 void GameScene::checkAndRemoveSprite()//查看并移除三连以上的精灵
@@ -67,7 +189,7 @@ void GameScene::checkAndRemoveSprite()//查看并移除三连以上的精灵
 			}
 			std::list<SpriteShape*>colChainList;
 			getColChain(spr, colChainList);
-
+			
 			std::list<SpriteShape*>rowChainList;
 			getRowChain(spr, rowChainList);
 			//得到较长的List
@@ -76,7 +198,6 @@ void GameScene::checkAndRemoveSprite()//查看并移除三连以上的精灵
 			{
 				continue;
 			}
-			//遍历longList，把里面的精灵丢到被标记的地方
 			std::list<SpriteShape*>::iterator itList;
 			if (colChainList.size() > 2)
 			{
@@ -237,6 +358,7 @@ void GameScene::fillSprite()//填充精灵，是先让已存在的精灵下落，之后在创建新的精
 {
 	isAction = true;
 	int sum = 0;//计算分数
+
 	int* colEmptyInfo = (int*)malloc(sizeof(int) * COLS);//创建变量，记录相应列数移除的数量
 	memset((void*)colEmptyInfo, 0, sizeof(int) * COLS);
 
@@ -468,6 +590,7 @@ void GameScene::swapSprite()
 		// 如果能够消除，仅仅进行移动（不会移动回来）
 		startSprite->runAction(MoveTo::create(time, posOfDest));
 		endSprite->runAction(MoveTo::create(time, posOfSrc));
+		myFrequency();//修改次数
 		return;
 	}
 
@@ -492,6 +615,30 @@ void GameScene::swapSprite()
 		NULL));
 }
 
+//放置剩余次数
+void GameScene::myFrequency()
+{
+	--m_frequency;
+	if (m_frequency == 0)//如果次数归0，直接结束游戏
+	{
+		Label* labelFrequency = (Label*)this->getChildByTag(11);
+		labelFrequency->setScale(0);
+		
+		auto gmov = Sprite::create("pic_gameover.png");
+		gmov->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH * 1.5));
+		this->addChild(gmov);
+
+		auto action = MoveTo::create(3.0f, Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2));
+		gmov->runAction(action);
+
+		return;
+	}
+	if (m_frequency > 0)//大于零，改变输出的数字
+	{
+		Label* labelFrequency = (Label*)this->getChildByTag(11);
+		labelFrequency->setString(StringUtils::format("Frequency: %d", m_frequency));
+	}
+}
 
 Scene* GameScene::createScene()	{
     auto scene = Scene::create();
@@ -533,15 +680,20 @@ bool GameScene::init()
 	auto menu = Menu::create(backItem, NULL);
     menu->setPosition(Vec2::ZERO);
 	this -> addChild( menu );
+	
 	// 加载ttf字体
 	TTFConfig config("fonts/haibaoti.ttf", 30);
 	//显示分数
-	auto labelScore = Label::createWithTTF(config,StringUtils::format("Score: %d ", m_score));
-	labelScore->setPosition(Vec2(GAME_SCREEN_WIDTH - backItem->getContentSize().width / 2, backItem->getContentSize().height / 2 +labelScore->getContentSize().height*2.6));
+	auto labelScore = Label::createWithTTF(config, StringUtils::format("Score: %d ", m_score));
+	labelScore->setPosition(Vec2(GAME_SCREEN_WIDTH - backItem->getContentSize().width / 2, backItem->getContentSize().height / 2 + labelScore->getContentSize().height * 2.6));
 	labelScore->setTag(10);
 	this->addChild(labelScore);
 	
 	//添加监听器
+	auto labelTime = Label::createWithTTF(config, StringUtils::format("Frequency: %d", m_frequency));
+	labelTime->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25, GAME_SCREEN_WIDTH / 2));
+	labelTime->setTag(11);
+	this->addChild(labelTime);
 
 	// 触摸事件处理
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -549,9 +701,6 @@ bool GameScene::init()
 	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 	touchListener->setSwallowTouches(true);
-
-
-
 	initMap();
 	scheduleUpdate();
 	return true;

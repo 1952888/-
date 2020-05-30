@@ -45,6 +45,10 @@ public:
 	void onTouchMoved(Touch *touch, Event *unused);
 	// 交换精灵
 	void swapSprite();
+	//剩余次数
+	void myFrequency();
+	//检查是否是死地图
+	bool checkIfDeadMap();
 
 	CREATE_FUNC(GameScene);
 private:
@@ -56,9 +60,11 @@ private:
 	//操纵的精灵
 	SpriteShape* startSprite;
 	SpriteShape* endSprite;
-	int m_score;
+	int m_score;//分数
 	bool isAction, isFillSprite;//用来判断是否在执行动作，是否需要填补空缺
 	bool isTouchEna;
+
+	int m_frequency;//剩余次数
 };
 
 #endif // __GAME_SCENE_H__
