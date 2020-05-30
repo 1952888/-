@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "SpriteShape.h"
 #include "WelcomeScene.h"
+#include"GameOverScene.h"
 
 GameScene::GameScene()
 	:spriteSheet(NULL)
@@ -631,6 +632,8 @@ void GameScene::myFrequency()
 		auto action = MoveTo::create(3.0f, Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2));
 		gmov->runAction(action);
 
+		auto scene = GameOver::createScene();
+		CCDirector::sharedDirector()->replaceScene(scene);
 		return;
 	}
 	if (m_frequency > 0)//大于零，改变输出的数字

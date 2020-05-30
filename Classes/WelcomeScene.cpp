@@ -1,6 +1,7 @@
 #include "WelcomeScene.h"
 #include "GameScene.h"
 #include "SimpleAudioEngine.h"
+#include"GameOverScene.h"
 
 USING_NS_CC;
 
@@ -54,6 +55,7 @@ bool WelcomeScene::init()
 	{
 		problemLoading("ranking.png,ranking2.png");
 	}
+	rankingItem->setColor(Color3B::BLACK);
 	rankingItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2.6));
 	rankingItem->setScale(0.4);
 
@@ -67,6 +69,7 @@ bool WelcomeScene::init()
 	{
 		problemLoading("bag.png,bag2.png");
 	}
+	bagItem->setColor(Color3B::BLACK);
 	bagItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 3.5));
 	bagItem->setScale(0.3);
 
@@ -80,6 +83,7 @@ bool WelcomeScene::init()
 	{
 		problemLoading("btn_start01.png and byn_start02.png");
 	}
+	startItem->setColor(Color3B::BLACK);
 	startItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	startItem->setScale(0.5);
 
@@ -93,6 +97,7 @@ bool WelcomeScene::init()
 	{
 		problemLoading("'gamefinish.png' and 'gamefinish2.png'");
 	}
+	closeItem->setColor(Color3B::BLACK);
 	closeItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 5));
 	closeItem->setScale(0.3);
 	
