@@ -3,6 +3,8 @@
 #include "WelcomeScene.h"
 #include"GameOverScene.h"
 
+using namespace CocosDenshion;
+
 GameScene::GameScene()
 	:spriteSheet(NULL)
 	,isFillSprite(false)
@@ -10,6 +12,7 @@ GameScene::GameScene()
 	,isTouchEna(true)
 	,m_frequency(30)
 	,m_score(0)
+	,musicNum(0.5)
 {
 }
 
@@ -279,6 +282,8 @@ void GameScene::actionEndCallBack(Node* node)//删除精灵函数
 	SpriteShape* spr = (SpriteShape*)node;
 	map[spr->getRow()][spr->getCol()] = NULL;
 	spr->removeFromParent();
+	//加载爆炸音乐
+	SimpleAudioEngine::sharedEngine()->playEffect("music_explode.wav", false);
 }
 
 void GameScene::getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList)//获取左右相同精灵的List
@@ -663,6 +668,10 @@ bool GameScene::init()
 	{
 		return false;
 	}
+	//添加音乐
+	SimpleAudioEngine* audio = SimpleAudioEngine::getInstance();
+	audio->playBackgroundMusic("music_bg.mp3");
+	audio->setBackgroundMusicVolume(0);
 
 	// 加载plist和png
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
@@ -670,8 +679,6 @@ bool GameScene::init()
     addChild(spriteSheet);
 	mapLBX = (GAME_SCREEN_WIDTH - SPRITE_WIDTH * COLS - (COLS - 1) * BOADER_WIDTH) / 2;
 	mapLBY = (GAME_SCREEN_HEIGHT - SPRITE_WIDTH * ROWS - (ROWS - 1) * BOADER_WIDTH) / 2;
-
-
 
 	// 添加背景图片
 	auto sprite = Sprite::create("scene_bg.png");
@@ -684,11 +691,19 @@ bool GameScene::init()
                                            "btn_back02.png",
 										   CC_CALLBACK_1(GameScene::menuBackCallback, this));
 	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH-backItem->getContentSize().width/2,backItem->getContentSize().height/2));
-
-	auto menu = Menu::create(backItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-	this -> addChild( menu );
 	
+	//添加设置按钮
+	auto set_upItem = MenuItemImage::create("set_up.png",
+		                                    "set_up.png", 
+		                                    CC_CALLBACK_1(GameScene::menuSetupCallBack, this,audio));
+	set_upItem->setPosition(Vec2(GAME_SCREEN_WIDTH/1.1, GAME_SCREEN_WIDTH/1.7));
+	set_upItem->setScale(0.1);
+
+
+	auto menu = Menu::create(backItem, set_upItem, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu);
+
 	// 加载ttf字体
 	TTFConfig config("fonts/haibaoti.ttf", 30);
 	//显示分数
@@ -719,6 +734,80 @@ void GameScene::menuBackCallback( Ref* pSender )
 {
 	auto scene = WelcomeScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
+}
+
+//设置函数，打开设置界面
+void GameScene::menuSetupCallBack(Ref* pSender, SimpleAudioEngine* audio)
+{
+	auto spriteSetup = Sprite::create("setup.png");
+	spriteSetup->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2.3)));
+	spriteSetup->setScale(0.2);
+	this->addChild(spriteSetup);
+
+	auto musicStrItem = MenuItemImage::create("music_str.png", 
+		                                      "music_str.png", 
+		                                      CC_CALLBACK_1(GameScene::menuMusicStrCallBack,this));
+	musicStrItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.8, GAME_SCREEN_WIDTH / 0.5)));
+	musicStrItem->setScale(2);
+
+	auto musicCloseItem = MenuItemImage::create("musicclose.png", 
+		                                        "musicclose.png", 
+		                                        CC_CALLBACK_1(GameScene::menuMusicCloseCallBack, this));
+	musicCloseItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 1.1, GAME_SCREEN_WIDTH / 0.5)));
+	musicCloseItem->setScale(2);
+
+	auto musicPlusItem = MenuItemImage::create("plus.png",
+		                                      "plus.png", 
+		                                       CC_CALLBACK_1(GameScene::menuMusicPlusCallBack, this, audio));
+	musicPlusItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.65, GAME_SCREEN_WIDTH / 0.7)));
+	musicPlusItem->setScale(0.5);
+
+	auto musicMinusItem = MenuItemImage::create("minus.png", 
+		                                        "minus.png", 
+		                                        CC_CALLBACK_1(GameScene::menuMusicMinusCallBack, this,audio));
+	musicMinusItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 1.8, GAME_SCREEN_WIDTH / 0.7)));
+	musicMinusItem->setScale(0.5);
+
+	auto deleteItem = MenuItemImage::create("delete.png",
+		                                    "delete.png",
+		                                    CC_CALLBACK_1(GameScene::menuReturnCallBack, this, spriteSetup));
+	deleteItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.49, GAME_SCREEN_WIDTH / 0.49)));
+	deleteItem->setScale(0.3);
+
+	auto menu = Menu::create(musicStrItem, musicCloseItem, deleteItem, musicMinusItem, musicPlusItem, NULL);
+	menu->setPosition(Vec2::ZERO);
+	spriteSetup->addChild(menu);
+
+}
+
+void GameScene::menuMusicPlusCallBack(Ref* pSender, SimpleAudioEngine* audio)
+{
+	musicNum += 0.1;
+	audio->setBackgroundMusicVolume(musicNum);
+}
+
+void GameScene::menuMusicMinusCallBack(Ref* pSender, SimpleAudioEngine* audio)
+{
+	musicNum -= 0.1;
+	audio->setBackgroundMusicVolume(musicNum);
+}
+
+//关闭设置界面
+void GameScene::menuReturnCallBack(Ref* pSender, Sprite* spr)
+{
+	spr->removeFromParent();
+}
+
+//音乐开始函数
+void GameScene::menuMusicStrCallBack(Ref* pSender)
+{
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
+}
+
+//音乐暂停函数
+void GameScene::menuMusicCloseCallBack(Ref* pSender)
+{
+	SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 }
 
 // 初始化地图
