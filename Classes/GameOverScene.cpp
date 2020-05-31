@@ -17,11 +17,15 @@ bool GameOver::init()
 		return false;
 	}
 
+	auto visibleSize = Director::getInstance()->getVisibleSize();//获取屏幕尺寸和原点坐标
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
 	TTFConfig config("fonts/yuehei.otf",48);
 
 	// 添加背景图片
     auto sprite = Sprite::create("scene_end.png");
-	sprite->setPosition(Point(GAME_SCREEN_WIDTH/2,GAME_SCREEN_HEIGHT/2));
+	sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	sprite->setScale(0.4);
     this->addChild(sprite);
 
 	// 添加重新开始按钮
@@ -30,7 +34,8 @@ bool GameOver::init()
                                            "btn_restart02.png",
 										   CC_CALLBACK_1(GameOver::menuRestartCallback, this));
     
-	restartItem->setPosition(Vec2(GAME_SCREEN_WIDTH/2,GAME_SCREEN_HEIGHT/6));
+	restartItem->setPosition(Vec2(GAME_SCREEN_WIDTH/2,GAME_SCREEN_HEIGHT/8));
+	restartItem->setScale(0.6);
 
 	// 添加返回主菜单按钮
 	auto backItem = MenuItemImage::create(
@@ -39,7 +44,8 @@ bool GameOver::init()
 										   CC_CALLBACK_1(GameOver::menuBackCallback, this));
     
 	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH/2,backItem->getContentSize().height/2 ));
-    
+	backItem->setScale(0.6);
+
 	// 添加退出游戏按钮
 	auto exitItem = MenuItemImage::create(
 											"btn_exit01.png",
@@ -54,7 +60,7 @@ bool GameOver::init()
 	// 分数
 	auto labelScore = Label::createWithTTF(config, "  0  ");
 	labelScore->setColor(Color3B::BLUE);
-	labelScore -> setPosition(Point( GAME_SCREEN_WIDTH/2 , GAME_SCREEN_HEIGHT/3));
+	labelScore -> setPosition(Point( GAME_SCREEN_WIDTH/2 , GAME_SCREEN_HEIGHT/3.5));
 	labelScore -> setTag(13);
 	this->addChild(labelScore);
 

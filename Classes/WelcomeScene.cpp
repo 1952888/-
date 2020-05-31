@@ -4,6 +4,7 @@
 #include"GameOverScene.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 Scene* WelcomeScene::createScene()
 {
@@ -25,6 +26,10 @@ bool WelcomeScene::init()
     // 1. super init first
     auto visibleSize = Director::getInstance()->getVisibleSize();//获取屏幕尺寸和原点坐标
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	//加载背景音乐
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("music_bg.mp3");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
 
 	auto sprite = Sprite::create("scene_bg.png");//放置开始界面背景
 	if (sprite == nullptr)
