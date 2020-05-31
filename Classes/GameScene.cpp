@@ -1,9 +1,6 @@
 #include "GameScene.h"
 #include "SpriteShape.h"
 #include "WelcomeScene.h"
-#include"GameOverScene.h"
-
-using namespace CocosDenshion;
 
 GameScene::GameScene()
 	:spriteSheet(NULL)
@@ -12,13 +9,12 @@ GameScene::GameScene()
 	,isTouchEna(true)
 	,m_frequency(30)
 	,m_score(0)
-	,musicNum(0.5)
 {
 }
 
-void GameScene::update(float t)//æ›´æ–°æ¯ä¸€å¸§
+void GameScene::update(float t)//¸üĞÂÃ¿Ò»Ö¡
 {
-	if (isAction)//å¦‚æœæ­£åœ¨åŠ¨ä½œï¼ŒæŸ¥çœ‹æ˜¯å¦æœ‰å…¶ä»–ç²¾çµæ­£åœ¨åŠ¨ä½œ
+	if (isAction)//Èç¹ûÕıÔÚ¶¯×÷£¬²é¿´ÊÇ·ñÓĞÆäËû¾«ÁéÕıÔÚ¶¯×÷
 	{
 		isAction = false;
 		for (int r = 0; r < ROWS; ++r)
@@ -35,9 +31,9 @@ void GameScene::update(float t)//æ›´æ–°æ¯ä¸€å¸§
 		}
 	}
 
-	// å¦‚æœç²¾çµæ­£åœ¨ç§»åŠ¨ä¸­ï¼Œå¿½è§†è§¦æ‘¸äº‹ä»¶
+	// Èç¹û¾«ÁéÕıÔÚÒÆ¶¯ÖĞ£¬ºöÊÓ´¥ÃşÊÂ¼ş
 	isTouchEna = !isAction;
-	if (!isAction)//å¦‚æœä¸åœ¨åŠ¨ä½œï¼ŒæŸ¥çœ‹æ˜¯å¦éœ€è¦å¡«å……ç²¾çµï¼Œå¦‚æœä¸éœ€è¦å¡«å……ç²¾çµï¼ŒæŸ¥çœ‹æ˜¯å¦è¦ç§»é™¤ç²¾çµ
+	if (!isAction)//Èç¹û²»ÔÚ¶¯×÷£¬²é¿´ÊÇ·ñĞèÒªÌî³ä¾«Áé£¬Èç¹û²»ĞèÒªÌî³ä¾«Áé£¬²é¿´ÊÇ·ñÒªÒÆ³ı¾«Áé
 	{
 		if (isFillSprite)
 		{
@@ -60,18 +56,15 @@ void GameScene::update(float t)//æ›´æ–°æ¯ä¸€å¸§
 			removeSprite();
 			m_score -= 1080;
 		}
-
 	}
 	Label* labelScore = (Label*)this->getChildByTag(10);
 
 	labelScore->setString(StringUtils::format("Score: %d ", m_score));
 }
 
-
-
-bool GameScene::checkIfDeadMap()//æŸ¥çœ‹æ˜¯å¦æ˜¯æ­»åœ°å›¾
+bool GameScene::checkIfDeadMap()//²é¿´ÊÇ·ñÊÇËÀµØÍ¼
 {
-	for (int r = 0; r < ROWS; ++r)//ä¸€å…±12ç§æƒ…å†µï¼Œå¦‚æœå…¨ä¸æ»¡è¶³åˆ™è¿”å›false
+	for (int r = 0; r < ROWS; ++r)//Ò»¹²12ÖÖÇé¿ö£¬Èç¹ûÈ«²»Âú×ãÔò·µ»Øfalse
 	{
 		for (int c = 0; c < COLS; ++c)
 		{
@@ -175,11 +168,10 @@ bool GameScene::checkIfDeadMap()//æŸ¥çœ‹æ˜¯å¦æ˜¯æ­»åœ°å›¾
 			}
 		}
 	}
-
 	return false;
 }
 
-void GameScene::checkAndRemoveSprite()//æŸ¥çœ‹å¹¶ç§»é™¤ä¸‰è¿ä»¥ä¸Šçš„ç²¾çµ
+void GameScene::checkAndRemoveSprite()//²é¿´²¢ÒÆ³ıÈıÁ¬ÒÔÉÏµÄ¾«Áé
 {
 	SpriteShape* spr;
 	for (int r = 0; r < ROWS; ++r)
@@ -200,9 +192,9 @@ void GameScene::checkAndRemoveSprite()//æŸ¥çœ‹å¹¶ç§»é™¤ä¸‰è¿ä»¥ä¸Šçš„ç²¾çµ
 			
 			std::list<SpriteShape*>rowChainList;
 			getRowChain(spr, rowChainList);
-			//å¾—åˆ°è¾ƒé•¿çš„List
+			//µÃµ½½Ï³¤µÄList
 			std::list<SpriteShape*>& longerList = colChainList.size() > rowChainList.size() ? colChainList : rowChainList;
-			if (longerList.size() < 3)//å¦‚æœListå°äº3ï¼Œç›´æ¥è·³è¿‡
+			if (longerList.size() < 3)//Èç¹ûListĞ¡ÓÚ3£¬Ö±½ÓÌø¹ı
 			{
 				continue;
 			}
@@ -216,7 +208,7 @@ void GameScene::checkAndRemoveSprite()//æŸ¥çœ‹å¹¶ç§»é™¤ä¸‰è¿ä»¥ä¸Šçš„ç²¾çµ
 					{
 						continue;
 					}
-					//æ ‡è®°éœ€è¦åˆ é™¤çš„ç²¾çµ
+					//±ê¼ÇĞèÒªÉ¾³ıµÄ¾«Áé
 					markRemove(spr);
 				}
 			}
@@ -229,26 +221,26 @@ void GameScene::checkAndRemoveSprite()//æŸ¥çœ‹å¹¶ç§»é™¤ä¸‰è¿ä»¥ä¸Šçš„ç²¾çµ
 					{
 						continue;
 					}
-					//æ ‡è®°éœ€è¦åˆ é™¤çš„ç²¾çµ
+					//±ê¼ÇĞèÒªÉ¾³ıµÄ¾«Áé
 					markRemove(spr);
 				}
 			}
 		}
 	}
-	//åˆ é™¤è¢«æ ‡è®°çš„ç²¾çµ
+	//É¾³ı±»±ê¼ÇµÄ¾«Áé
 	removeSprite();
 }
 
-void GameScene::markRemove(SpriteShape* spr)//æ ‡è®°éœ€è¦åˆ é™¤çš„ç²¾çµ
+void GameScene::markRemove(SpriteShape* spr)//±ê¼ÇĞèÒªÉ¾³ıµÄ¾«Áé
 {
-	if (spr->getIsNeedRemove())//å¦‚æœå·²ç»è¢«æ ‡è®°ï¼Œåˆ™ç›´æ¥è¿”å›
+	if (spr->getIsNeedRemove())//Èç¹ûÒÑ¾­±»±ê¼Ç£¬ÔòÖ±½Ó·µ»Ø
 	{
 		return;
 	}
 	spr->setIsNeedRemove(true);
 }
 
-void GameScene::removeSprite()//åˆ é™¤ç²¾çµ
+void GameScene::removeSprite()//É¾³ı¾«Áé
 {
 	isAction = true;
 	for (int r = 0; r < ROWS; ++r)
@@ -256,11 +248,11 @@ void GameScene::removeSprite()//åˆ é™¤ç²¾çµ
 		for (int c = 0; c < COLS; ++c)
 		{
 			SpriteShape* spr = map[r][c];
-			if (!spr)//å¦‚æœå·²ç»è¢«åˆ é™¤ï¼Œè·³è¿‡è¿™æ¬¡å¾ªç¯
+			if (!spr)//Èç¹ûÒÑ¾­±»É¾³ı£¬Ìø¹ıÕâ´ÎÑ­»·
 			{
 				continue;
 			}
-			if (spr->getIsNeedRemove())//å¦‚æœéœ€è¦è¢«åˆ é™¤ï¼Œåˆ é™¤ç²¾çµï¼Œä¿®æ”¹isFillSprite
+			if (spr->getIsNeedRemove())//Èç¹ûĞèÒª±»É¾³ı£¬É¾³ı¾«Áé£¬ĞŞ¸ÄisFillSprite
 			{
 				isFillSprite = true;
 				explodeSprite(spr);
@@ -269,28 +261,26 @@ void GameScene::removeSprite()//åˆ é™¤ç²¾çµ
 	}
 }
 
-void GameScene::explodeSprite(SpriteShape* spr)//çˆ†ç‚¸åˆ é™¤
+void GameScene::explodeSprite(SpriteShape* spr)//±¬Õ¨É¾³ı
 {
-	//ä¸€ä¸ªçˆ†ç‚¸åŠ¨ä½œ
+	//Ò»¸ö±¬Õ¨¶¯×÷
 	spr->runAction(Sequence::create(ScaleTo::create(0.2f, 0.0),
 		CallFuncN::create(CC_CALLBACK_1(GameScene::actionEndCallBack, this)),
 		NULL));
 }
 
-void GameScene::actionEndCallBack(Node* node)//åˆ é™¤ç²¾çµå‡½æ•°
+void GameScene::actionEndCallBack(Node* node)//É¾³ı¾«Áéº¯Êı
 {
 	SpriteShape* spr = (SpriteShape*)node;
 	map[spr->getRow()][spr->getCol()] = NULL;
 	spr->removeFromParent();
-	//åŠ è½½çˆ†ç‚¸éŸ³ä¹
-	SimpleAudioEngine::sharedEngine()->playEffect("music_explode.wav", false);
 }
 
-void GameScene::getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList)//è·å–å·¦å³ç›¸åŒç²¾çµçš„List
+void GameScene::getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList)//»ñÈ¡×óÓÒÏàÍ¬¾«ÁéµÄList
 {
 	chainList.push_back(spr);
 
-	int neighborCol = spr->getCol() - 1;//å‘å·¦
+	int neighborCol = spr->getCol() - 1;//Ïò×ó
 	while (neighborCol >= 0)
 	{
 		SpriteShape* neighborSprite = map[spr->getRow()][neighborCol];
@@ -307,7 +297,7 @@ void GameScene::getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList
 		}
 	}
 
-	neighborCol = spr->getCol() + 1;//å‘å³
+	neighborCol = spr->getCol() + 1;//ÏòÓÒ
 	while (neighborCol < COLS)
 	{
 		SpriteShape* neighborSprite = map[spr->getRow()][neighborCol];
@@ -325,11 +315,11 @@ void GameScene::getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList
 	}
 }
 
-void GameScene::getRowChain(SpriteShape* spr, std::list<SpriteShape*>&chainList)//è·å–ä¸Šä¸‹ç›¸åŒç²¾çµçš„List
+void GameScene::getRowChain(SpriteShape* spr, std::list<SpriteShape*>&chainList)//»ñÈ¡ÉÏÏÂÏàÍ¬¾«ÁéµÄList
 {
 	chainList.push_back(spr);
 
-	int neighborRow = spr->getRow() - 1;//å‘ä¸Š
+	int neighborRow = spr->getRow() - 1;//ÏòÉÏ
 	while (neighborRow >= 0)
 	{
 		SpriteShape* neighborSprite = map[neighborRow][spr->getCol()];
@@ -346,7 +336,7 @@ void GameScene::getRowChain(SpriteShape* spr, std::list<SpriteShape*>&chainList)
 		}
 	}
 	
-	neighborRow = spr->getRow() + 1;//å‘ä¸‹
+	neighborRow = spr->getRow() + 1;//ÏòÏÂ
 	while (neighborRow < ROWS)
 	{
 		SpriteShape* neighborSprite = map[neighborRow][spr->getCol()];
@@ -364,27 +354,27 @@ void GameScene::getRowChain(SpriteShape* spr, std::list<SpriteShape*>&chainList)
 	}
 }
 
-void GameScene::fillSprite()//å¡«å……ç²¾çµï¼Œæ˜¯å…ˆè®©å·²å­˜åœ¨çš„ç²¾çµä¸‹è½ï¼Œä¹‹ååœ¨åˆ›å»ºæ–°çš„ç²¾çµ
+void GameScene::fillSprite()//Ìî³ä¾«Áé£¬ÊÇÏÈÈÃÒÑ´æÔÚµÄ¾«ÁéÏÂÂä£¬Ö®ºóÔÚ´´½¨ĞÂµÄ¾«Áé
 {
 	isAction = true;
-	int sum = 0;//è®¡ç®—åˆ†æ•°
+	int sum = 0;//¼ÆËã·ÖÊı
 
-	int* colEmptyInfo = (int*)malloc(sizeof(int) * COLS);//åˆ›å»ºå˜é‡ï¼Œè®°å½•ç›¸åº”åˆ—æ•°ç§»é™¤çš„æ•°é‡
+	int* colEmptyInfo = (int*)malloc(sizeof(int) * COLS);//´´½¨±äÁ¿£¬¼ÇÂ¼ÏàÓ¦ÁĞÊıÒÆ³ıµÄÊıÁ¿
 	memset((void*)colEmptyInfo, 0, sizeof(int) * COLS);
 
 	SpriteShape* spr = NULL;
-	for (int c = 0; c < COLS; ++c)//éå†map
+	for (int c = 0; c < COLS; ++c)//±éÀúmap
 	{
-		//è‡ªåº•å‘ä¸Š
+		//×Ôµ×ÏòÉÏ
 		int removedSpriteOfCol = 0;
 		for (int r = 0; r < ROWS; ++r)
 		{
 			spr = map[r][c];
-			if (spr == NULL)//å¦‚æœè¿™ä¸ªä½ç½®æ²¡æœ‰ç²¾çµï¼Œå˜é‡è‡ªå¢
+			if (spr == NULL)//Èç¹ûÕâ¸öÎ»ÖÃÃ»ÓĞ¾«Áé£¬±äÁ¿×ÔÔö
 			{
 				++removedSpriteOfCol;
 			}
-			else//åœ¨ç¬¬ä¸€ä¸ªå‡ºç°ç²¾çµçš„ä½ç½®ï¼Œè®©ç²¾çµä¸‹è½
+			else//ÔÚµÚÒ»¸ö³öÏÖ¾«ÁéµÄÎ»ÖÃ£¬ÈÃ¾«ÁéÏÂÂä
 			{
 				if (removedSpriteOfCol > 0)
 				{
@@ -402,11 +392,11 @@ void GameScene::fillSprite()//å¡«å……ç²¾çµï¼Œæ˜¯å…ˆè®©å·²å­˜åœ¨çš„ç²¾çµä¸‹è½ï¼
 				}
 			}
 		}
-		colEmptyInfo[c] = removedSpriteOfCol;//è®°å½•æ¯åˆ—è¢«æ¶ˆé™¤çš„ç²¾çµæ•°é‡
+		colEmptyInfo[c] = removedSpriteOfCol;//¼ÇÂ¼Ã¿ÁĞ±»Ïû³ıµÄ¾«ÁéÊıÁ¿
 		sum += removedSpriteOfCol;
 	}
 
-	for (int c = 0; c < COLS; ++c)//åˆ›å»ºæ–°çš„ç²¾çµä¸‹è½
+	for (int c = 0; c < COLS; ++c)//´´½¨ĞÂµÄ¾«ÁéÏÂÂä
 	{
 		for (int r = ROWS - colEmptyInfo[c]; r < ROWS; ++r)
 		{
@@ -419,7 +409,7 @@ void GameScene::fillSprite()//å¡«å……ç²¾çµï¼Œæ˜¯å…ˆè®©å·²å­˜åœ¨çš„ç²¾çµä¸‹è½ï¼
 
 
 
-// å¼€å§‹è§¦æ‘¸
+// ¿ªÊ¼´¥Ãş
 bool GameScene::onTouchBegan(Touch *touch, Event *unused) 
 {
 	startSprite = NULL;
@@ -433,21 +423,21 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused)
 	return isTouchEna;
 }
 
-// è§¦æ‘¸åç§»åŠ¨çš„æ–¹å‘
+// ´¥ÃşºóÒÆ¶¯µÄ·½Ïò
 void GameScene::onTouchMoved(Touch *touch, Event *unused)
 {
-	// å¦‚æœæ²¡æœ‰åˆå§‹ç²¾çµ æˆ–è€… è§¦æ‘¸äº‹ä»¶ä¸å¯è¡Œï¼Œç›´æ¥è¿”å›
+	// Èç¹ûÃ»ÓĞ³õÊ¼¾«Áé »òÕß ´¥ÃşÊÂ¼ş²»¿ÉĞĞ£¬Ö±½Ó·µ»Ø
 	if (!startSprite || !isTouchEna)
 	{
 		return;
 	}
 
 
-	// è·å– åˆå§‹ç²¾çµ çš„è¡Œåˆ—
+	// »ñÈ¡ ³õÊ¼¾«Áé µÄĞĞÁĞ
 	int row = startSprite->getRow();
 	int col = startSprite->getCol();
 
-	// è·å–ç§»åŠ¨åˆ°çš„ ç‚¹ çš„ä½ç½®
+	// »ñÈ¡ÒÆ¶¯µ½µÄ µã µÄÎ»ÖÃ
 	auto location = touch->getLocation();
 	auto halfSpriteWidth = SPRITE_WIDTH / 2;
 	auto halfSpriteHeight = SPRITE_WIDTH / 2;
@@ -457,7 +447,7 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 		SPRITE_WIDTH,
 		SPRITE_WIDTH);
 
-	// åˆ¤æ–­æ˜¯åœ¨å‘å“ªä¸ªæ–¹å‘ç§»åŠ¨ï¼Œ
+	// ÅĞ¶ÏÊÇÔÚÏòÄÄ¸ö·½ÏòÒÆ¶¯£¬
 	if (upRect.containsPoint(location)) 
 	{
 		row++;
@@ -517,10 +507,10 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 		return;
 	}
 
-	// å¦åˆ™ï¼Œå¹¶éä¸€ä¸ªæœ‰æ•ˆçš„ç§»åŠ¨
+	// ·ñÔò£¬²¢·ÇÒ»¸öÓĞĞ§µÄÒÆ¶¯
 }
 
-// æ ¹æ®è§¦æ‘¸çš„ç‚¹ä½ç½®ï¼Œè¿”å›æ˜¯åœ°å›¾ä¸­å“ªä¸ªç²¾çµ
+// ¸ù¾İ´¥ÃşµÄµãÎ»ÖÃ£¬·µ»ØÊÇµØÍ¼ÖĞÄÄ¸ö¾«Áé
 SpriteShape *GameScene::spriteOfPoint(Point *point)
 {
 	SpriteShape *spr = NULL;
@@ -551,14 +541,14 @@ SpriteShape *GameScene::spriteOfPoint(Point *point)
 	return NULL;
 }
 
-// äº¤æ¢ç²¾çµ
+// ½»»»¾«Áé
 void GameScene::swapSprite() 
 {
-	// ç§»åŠ¨ä¸­ï¼Œä¸å…è®¸å†æ¬¡è§¦æ‘¸ï¼Œæ‰§è¡ŒåŠ¨ä½œè®¾ç½®ä¸ºtrue
+	// ÒÆ¶¯ÖĞ£¬²»ÔÊĞíÔÙ´Î´¥Ãş£¬Ö´ĞĞ¶¯×÷ÉèÖÃÎªtrue
 	isAction = true;
 	isTouchEna = false;
 
-	// åˆå§‹ç²¾çµ å’Œ ç»ˆæ­¢ç²¾çµ å‡ä¸èƒ½ä¸ºç©º
+	// ³õÊ¼¾«Áé ºÍ ÖÕÖ¹¾«Áé ¾ù²»ÄÜÎª¿Õ
 	if (!startSprite || !endSprite) 
 	{
 		return;
@@ -569,7 +559,7 @@ void GameScene::swapSprite()
 
 	float time = 0.2;
 
-	// åœ¨æ•°ç»„ä¸­äº¤æ¢ä½ç½®
+	// ÔÚÊı×éÖĞ½»»»Î»ÖÃ
 	map[startSprite->getRow()][startSprite->getCol()] = endSprite;
 	map[endSprite->getRow()][endSprite->getCol()] = startSprite;
 
@@ -580,7 +570,7 @@ void GameScene::swapSprite()
 	endSprite->setRow(tmpRow);
 	endSprite->setCol(tmpCol);
 
-	// æ£€æŸ¥æ˜¯å¦èƒ½æ¶ˆé™¤
+	// ¼ì²éÊÇ·ñÄÜÏû³ı
 	std::list<SpriteShape *> colChainListOfFirst;
 	getColChain(startSprite, colChainListOfFirst);
 
@@ -597,14 +587,14 @@ void GameScene::swapSprite()
 		|| rowChainListOfFirst.size() >= 3
 		|| colChainListOfSecond.size() >= 3
 		|| rowChainListOfSecond.size() >= 3) {
-		// å¦‚æœèƒ½å¤Ÿæ¶ˆé™¤ï¼Œä»…ä»…è¿›è¡Œç§»åŠ¨ï¼ˆä¸ä¼šç§»åŠ¨å›æ¥ï¼‰
+		// Èç¹ûÄÜ¹»Ïû³ı£¬½ö½ö½øĞĞÒÆ¶¯£¨²»»áÒÆ¶¯»ØÀ´£©
 		startSprite->runAction(MoveTo::create(time, posOfDest));
 		endSprite->runAction(MoveTo::create(time, posOfSrc));
-		myFrequency();//ä¿®æ”¹æ¬¡æ•°
+		myFrequency();//ĞŞ¸Ä´ÎÊı
 		return;
 	}
 
-	// ä¸èƒ½æ¶ˆé™¤ï¼Œåˆ™ç§»åŠ¨è¿‡å»è¿˜è¦è¿”å›
+	// ²»ÄÜÏû³ı£¬ÔòÒÆ¶¯¹ıÈ¥»¹Òª·µ»Ø
 	map[startSprite->getRow()][startSprite->getCol()] = endSprite;
 	map[endSprite->getRow()][endSprite->getCol()] = startSprite;
 
@@ -625,11 +615,11 @@ void GameScene::swapSprite()
 		NULL));
 }
 
-//æ”¾ç½®å‰©ä½™æ¬¡æ•°
+//·ÅÖÃÊ£Óà´ÎÊı
 void GameScene::myFrequency()
 {
 	--m_frequency;
-	if (m_frequency == 0)//å¦‚æœæ¬¡æ•°å½’0ï¼Œç›´æ¥ç»“æŸæ¸¸æˆ
+	if (m_frequency == 0)//Èç¹û´ÎÊı¹é0£¬Ö±½Ó½áÊøÓÎÏ·
 	{
 		Label* labelFrequency = (Label*)this->getChildByTag(11);
 		labelFrequency->setScale(0);
@@ -641,12 +631,9 @@ void GameScene::myFrequency()
 		auto action = MoveTo::create(3.0f, Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2));
 		gmov->runAction(action);
 
-		auto scene = GameOver::createScene();
-		CCDirector::sharedDirector()->replaceScene(scene);
-
 		return;
 	}
-	if (m_frequency > 0)//å¤§äºé›¶ï¼Œæ”¹å˜è¾“å‡ºçš„æ•°å­—
+	if (m_frequency > 0)//´óÓÚÁã£¬¸Ä±äÊä³öµÄÊı×Ö
 	{
 		Label* labelFrequency = (Label*)this->getChildByTag(11);
 		labelFrequency->setString(StringUtils::format("Frequency: %d", m_frequency));
@@ -660,65 +647,55 @@ Scene* GameScene::createScene()	{
 	return scene;
 }
 
-// æ¬¢è¿ç•Œé¢ åˆå§‹åŒ–å‡½æ•°
+// »¶Ó­½çÃæ ³õÊ¼»¯º¯Êı
 bool GameScene::init()	
 {
-	// å…ˆåˆå§‹åŒ–çˆ¶ç±»ï¼Œä¸æˆåŠŸè¿”å›false
+	// ÏÈ³õÊ¼»¯¸¸Àà£¬²»³É¹¦·µ»Øfalse
 	if( !Layer::init() )	
 	{
 		return false;
 	}
-	//æ·»åŠ éŸ³ä¹
-	SimpleAudioEngine* audio = SimpleAudioEngine::getInstance();
-	audio->playBackgroundMusic("music_bg.mp3");
-	audio->setBackgroundMusicVolume(0);
 
-	// åŠ è½½plistå’Œpng
+	// ¼ÓÔØplistºÍpng
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
     spriteSheet = SpriteBatchNode::create("icon.png");
     addChild(spriteSheet);
 	mapLBX = (GAME_SCREEN_WIDTH - SPRITE_WIDTH * COLS - (COLS - 1) * BOADER_WIDTH) / 2;
 	mapLBY = (GAME_SCREEN_HEIGHT - SPRITE_WIDTH * ROWS - (ROWS - 1) * BOADER_WIDTH) / 2;
 
-	// æ·»åŠ èƒŒæ™¯å›¾ç‰‡
+
+
+	// Ìí¼Ó±³¾°Í¼Æ¬
 	auto sprite = Sprite::create("scene_bg.png");
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH/2,GAME_SCREEN_HEIGHT/2));
     this->addChild(sprite,-1);
 
-	// æ·»åŠ è¿”å›æŒ‰é’®
+	// Ìí¼Ó·µ»Ø°´Å¥
 	auto backItem = MenuItemImage::create(
                                            "btn_back01.png",
                                            "btn_back02.png",
 										   CC_CALLBACK_1(GameScene::menuBackCallback, this));
 	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH-backItem->getContentSize().width/2,backItem->getContentSize().height/2));
+
+	auto menu = Menu::create(backItem, NULL);
+    menu->setPosition(Vec2::ZERO);
+	this -> addChild( menu );
 	
-	//æ·»åŠ è®¾ç½®æŒ‰é’®
-	auto set_upItem = MenuItemImage::create("set_up.png",
-		                                    "set_up.png", 
-		                                    CC_CALLBACK_1(GameScene::menuSetupCallBack, this,audio));
-	set_upItem->setPosition(Vec2(GAME_SCREEN_WIDTH/1.1, GAME_SCREEN_WIDTH/1.7));
-	set_upItem->setScale(0.1);
-
-
-	auto menu = Menu::create(backItem, set_upItem, NULL);
-	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu);
-
-	// åŠ è½½ttfå­—ä½“
+	// ¼ÓÔØttf×ÖÌå
 	TTFConfig config("fonts/haibaoti.ttf", 30);
-	//æ˜¾ç¤ºåˆ†æ•°
+	//ÏÔÊ¾·ÖÊı
 	auto labelScore = Label::createWithTTF(config, StringUtils::format("Score: %d ", m_score));
 	labelScore->setPosition(Vec2(GAME_SCREEN_WIDTH - backItem->getContentSize().width / 2, backItem->getContentSize().height / 2 + labelScore->getContentSize().height * 2.6));
 	labelScore->setTag(10);
 	this->addChild(labelScore);
 	
-	//æ·»åŠ ç›‘å¬å™¨
+	//Ìí¼Ó¼àÌıÆ÷
 	auto labelTime = Label::createWithTTF(config, StringUtils::format("Frequency: %d", m_frequency));
 	labelTime->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25, GAME_SCREEN_WIDTH / 2));
 	labelTime->setTag(11);
 	this->addChild(labelTime);
 
-	// è§¦æ‘¸äº‹ä»¶å¤„ç†
+	// ´¥ÃşÊÂ¼ş´¦Àí
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
 	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
@@ -729,88 +706,14 @@ bool GameScene::init()
 	return true;
 }
 
-// è¿”å›å‡½æ•°ï¼Œè·³è½¬åˆ°æ¬¢è¿ç•Œé¢
+// ·µ»Øº¯Êı£¬Ìø×ªµ½»¶Ó­½çÃæ
 void GameScene::menuBackCallback( Ref* pSender )	
 {
 	auto scene = WelcomeScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
 }
 
-//è®¾ç½®å‡½æ•°ï¼Œæ‰“å¼€è®¾ç½®ç•Œé¢
-void GameScene::menuSetupCallBack(Ref* pSender, SimpleAudioEngine* audio)
-{
-	auto spriteSetup = Sprite::create("setup.png");
-	spriteSetup->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2.3)));
-	spriteSetup->setScale(0.2);
-	this->addChild(spriteSetup);
-
-	auto musicStrItem = MenuItemImage::create("music_str.png", 
-		                                      "music_str.png", 
-		                                      CC_CALLBACK_1(GameScene::menuMusicStrCallBack,this));
-	musicStrItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.8, GAME_SCREEN_WIDTH / 0.5)));
-	musicStrItem->setScale(2);
-
-	auto musicCloseItem = MenuItemImage::create("musicclose.png", 
-		                                        "musicclose.png", 
-		                                        CC_CALLBACK_1(GameScene::menuMusicCloseCallBack, this));
-	musicCloseItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 1.1, GAME_SCREEN_WIDTH / 0.5)));
-	musicCloseItem->setScale(2);
-
-	auto musicPlusItem = MenuItemImage::create("plus.png",
-		                                      "plus.png", 
-		                                       CC_CALLBACK_1(GameScene::menuMusicPlusCallBack, this, audio));
-	musicPlusItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.65, GAME_SCREEN_WIDTH / 0.7)));
-	musicPlusItem->setScale(0.5);
-
-	auto musicMinusItem = MenuItemImage::create("minus.png", 
-		                                        "minus.png", 
-		                                        CC_CALLBACK_1(GameScene::menuMusicMinusCallBack, this,audio));
-	musicMinusItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 1.8, GAME_SCREEN_WIDTH / 0.7)));
-	musicMinusItem->setScale(0.5);
-
-	auto deleteItem = MenuItemImage::create("delete.png",
-		                                    "delete.png",
-		                                    CC_CALLBACK_1(GameScene::menuReturnCallBack, this, spriteSetup));
-	deleteItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.49, GAME_SCREEN_WIDTH / 0.49)));
-	deleteItem->setScale(0.3);
-
-	auto menu = Menu::create(musicStrItem, musicCloseItem, deleteItem, musicMinusItem, musicPlusItem, NULL);
-	menu->setPosition(Vec2::ZERO);
-	spriteSetup->addChild(menu);
-
-}
-
-void GameScene::menuMusicPlusCallBack(Ref* pSender, SimpleAudioEngine* audio)
-{
-	musicNum += 0.1;
-	audio->setBackgroundMusicVolume(musicNum);
-}
-
-void GameScene::menuMusicMinusCallBack(Ref* pSender, SimpleAudioEngine* audio)
-{
-	musicNum -= 0.1;
-	audio->setBackgroundMusicVolume(musicNum);
-}
-
-//å…³é—­è®¾ç½®ç•Œé¢
-void GameScene::menuReturnCallBack(Ref* pSender, Sprite* spr)
-{
-	spr->removeFromParent();
-}
-
-//éŸ³ä¹å¼€å§‹å‡½æ•°
-void GameScene::menuMusicStrCallBack(Ref* pSender)
-{
-	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
-}
-
-//éŸ³ä¹æš‚åœå‡½æ•°
-void GameScene::menuMusicCloseCallBack(Ref* pSender)
-{
-	SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
-}
-
-// åˆå§‹åŒ–åœ°å›¾
+// ³õÊ¼»¯µØÍ¼
 void GameScene::initMap( )	
 {
 	
@@ -823,25 +726,25 @@ void GameScene::initMap( )
 	}
 }
 
-// åˆ›å»ºç²¾çµ
+// ´´½¨¾«Áé
 void GameScene::createSprite( int row , int col )	
 {
 	
 	SpriteShape* temp = SpriteShape::create(row, col);
 	
-	// åˆ›å»ºä¸‹è½åŠ¨ç”»
+	// ´´½¨ÏÂÂä¶¯»­
 	Point endPosition = getposition(row, col);
 	Point startPosition = Point(endPosition.x, endPosition.y + GAME_SCREEN_HEIGHT / 2);
     temp->setPosition(startPosition);
 	float speed = startPosition.y / (1.5 * GAME_SCREEN_HEIGHT );
     temp->runAction(MoveTo::create(speed, endPosition));
-    // åŠ å…¥åˆ°spriteSheetä¸­,ç­‰å¾…ç»˜åˆ¶
+    // ¼ÓÈëµ½spriteSheetÖĞ,µÈ´ı»æÖÆ
     spriteSheet -> addChild(temp);
 
     map[row][col] = temp;
 }
 
-// æ ¹æ®è¡Œåˆ—ï¼Œè·å–åæ ‡å€¼
+// ¸ù¾İĞĞÁĞ£¬»ñÈ¡×ø±êÖµ
 Point GameScene::getposition(int row , int col)
 {
 	float x = (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;

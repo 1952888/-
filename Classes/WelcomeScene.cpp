@@ -1,10 +1,8 @@
 #include "WelcomeScene.h"
 #include "GameScene.h"
 #include "SimpleAudioEngine.h"
-#include"GameOverScene.h"
 
 USING_NS_CC;
-using namespace CocosDenshion;
 
 Scene* WelcomeScene::createScene()
 {
@@ -26,10 +24,6 @@ bool WelcomeScene::init()
     // 1. super init first
     auto visibleSize = Director::getInstance()->getVisibleSize();//获取屏幕尺寸和原点坐标
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-	//加载背景音乐
-	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("music_bg.mp3");
-	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
 
 	auto sprite = Sprite::create("scene_bg.png");//放置开始界面背景
 	if (sprite == nullptr)
@@ -60,7 +54,6 @@ bool WelcomeScene::init()
 	{
 		problemLoading("ranking.png,ranking2.png");
 	}
-	rankingItem->setColor(Color3B::BLACK);
 	rankingItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2.6));
 	rankingItem->setScale(0.4);
 
@@ -74,7 +67,6 @@ bool WelcomeScene::init()
 	{
 		problemLoading("bag.png,bag2.png");
 	}
-	bagItem->setColor(Color3B::BLACK);
 	bagItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 3.5));
 	bagItem->setScale(0.3);
 
@@ -88,7 +80,6 @@ bool WelcomeScene::init()
 	{
 		problemLoading("btn_start01.png and byn_start02.png");
 	}
-	startItem->setColor(Color3B::BLACK);
 	startItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	startItem->setScale(0.5);
 
@@ -102,7 +93,6 @@ bool WelcomeScene::init()
 	{
 		problemLoading("'gamefinish.png' and 'gamefinish2.png'");
 	}
-	closeItem->setColor(Color3B::BLACK);
 	closeItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 5));
 	closeItem->setScale(0.3);
 	

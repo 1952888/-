@@ -16,9 +16,6 @@
 // 精灵种类总数
 #define TOTAL_SPRITE 6
 
-#include "SimpleAudioEngine.h"
-
-
 // 普通的精灵
 static const char *spriteNormal[TOTAL_SPRITE] = {
 	"icon1.png",
