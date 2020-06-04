@@ -3,8 +3,10 @@
 
 #include "cocos2d.h"
 #include "GameDefine.h"
+#include"RankingScene.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 class SpriteShape;
 
@@ -19,6 +21,18 @@ public:
 	void initMap();
 	// 创建精灵
 	void createSprite( int row , int col );
+	//打开设置界面
+	void menuSetupCallBack(Ref* pSender, SimpleAudioEngine* audio);
+	//关闭设置界面
+	void menuReturnCallBack(Ref* pSender, Sprite* spr);
+	//打开音乐
+	void menuMusicStrCallBack(Ref* pSender);
+	//关闭音乐
+	void menuMusicCloseCallBack(Ref* pSender);
+	//调高音量
+	void menuMusicPlusCallBack(Ref* pSender, SimpleAudioEngine* audio);
+	//降低音量
+	void menuMusicMinusCallBack(Ref* pSender,SimpleAudioEngine* audio);
 	// 返回欢迎界面函数
 	void menuBackCallback( Ref* pSender );
 	// 得到对应行列精灵的坐标值
@@ -50,6 +64,7 @@ public:
 	//检查是否是死地图
 	bool checkIfDeadMap();
 
+
 	CREATE_FUNC(GameScene);
 private:
 	// 绘制一批图片
@@ -60,10 +75,10 @@ private:
 	//操纵的精灵
 	SpriteShape* startSprite;
 	SpriteShape* endSprite;
-	int m_score;//分数
 	bool isAction, isFillSprite;//用来判断是否在执行动作，是否需要填补空缺
 	bool isTouchEna;
-
+	float musicNum;
+	int m_score;//分数
 	int m_frequency;//剩余次数
 };
 

@@ -14,6 +14,8 @@ public:
     void menuCloseCallback(cocos2d::Ref* pSender);
 	//切换到游戏场景的回调函数声明
 	void menuStartCallback(cocos2d::Ref* pSender);
+	//切换到排行榜
+	void menuRankingCallback(cocos2d::Ref* pSender);
 
     CREATE_FUNC(WelcomeScene);
 };
