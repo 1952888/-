@@ -632,8 +632,14 @@ void GameScene::myFrequency()
 		auto action = MoveTo::create(3.0f, Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2));
 		gmov->runAction(action);
 
-		auto scene = GameOver::createScene();
-		CCDirector::sharedDirector()->replaceScene(scene);
+		auto scene = Scene::create();
+		auto layer = GameOver::create();
+		// 传递当前游戏获得的分数
+		layer->setScore(m_score);
+		scene->addChild(layer);
+
+		CCTransitionScene* reScene = CCTransitionFadeUp::create(1.0f, scene);
+		CCDirector::sharedDirector()->replaceScene(reScene);;
 		return;
 	}
 	if (m_frequency > 0)//大于零，改变输出的数字
