@@ -33,5 +33,8 @@ static const char *spriteNormal[TOTAL_SPRITE] = {
 extern int score[10];
 extern int score_num;
 
+extern int fourDisappearNum;
+extern int plus5Num;
+
 #endif
 

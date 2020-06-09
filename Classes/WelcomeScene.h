@@ -16,6 +16,9 @@ public:
 	void menuStartCallback(cocos2d::Ref* pSender);
 	//ÇÐ»»µ½ÅÅÐÐ°ñ
 	void menuRankingCallback(cocos2d::Ref* pSender);
+	//ÇÐ»»µ½±³°ü
+	void menuBagCallback(cocos2d::Ref* pSender);
+
 
     CREATE_FUNC(WelcomeScene);
 };

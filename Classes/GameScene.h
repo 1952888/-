@@ -35,6 +35,10 @@ public:
 	void menuMusicMinusCallBack(Ref* pSender,SimpleAudioEngine* audio);
 	// 返回欢迎界面函数
 	void menuBackCallback( Ref* pSender );
+	//使用加次数道具
+	void menuPlus5Callback(Ref* pSender, int* frequency);
+	//使用四消道具
+	void menufourDisappearCallback(Ref* pSender);
 	// 得到对应行列精灵的坐标值
 	Point getposition( int row , int col );
 

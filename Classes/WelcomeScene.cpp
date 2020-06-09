@@ -3,6 +3,7 @@
 #include "SimpleAudioEngine.h"
 #include"GameOverScene.h"
 #include"RankingScene.h"
+#include "BagScene.h"
 
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -68,7 +69,7 @@ bool WelcomeScene::init()
 	//放置背包按钮，切换到背包界面
 	auto bagItem = MenuItemImage::create("bag.png",
 		                                 "bag2.png",
-		                                 CC_CALLBACK_1(WelcomeScene::menuCloseCallback, this));
+		                                 CC_CALLBACK_1(WelcomeScene::menuBagCallback, this));
 	if (bagItem == nullptr ||
 		bagItem->getContentSize().width <= 0 ||
 		bagItem->getContentSize().height <= 0)
@@ -129,5 +130,11 @@ void WelcomeScene::menuStartCallback(Ref* pSender)
 void WelcomeScene::menuRankingCallback(Ref* pSender)
 {
 	auto scene = RankingScene::createScene();
+	CCDirector::sharedDirector()->replaceScene(scene);
+}
+
+void WelcomeScene::menuBagCallback(Ref* pSender)
+{
+	auto scene = BagScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
 }
