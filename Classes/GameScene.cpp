@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include"GameDefine.h"
 #include "SpriteShape.h"
 #include "WelcomeScene.h"
 #include"GameOverScene.h"
@@ -8,6 +9,8 @@ GameScene::GameScene()
 	,isFillSprite(false)
 	,isAction(true)
 	,isTouchEna(true)
+	, startSprite(NULL)
+	, endSprite(NULL)
 	,m_frequency(30)
 	,m_score(0)
 {
@@ -171,91 +174,167 @@ bool GameScene::checkIfDeadMap()//查看是否是死地图
 	}
 	return false;
 }
-
-void GameScene::checkAndRemoveSprite()//查看并移除三连以上的精灵
+// 检测是否有精灵可以移除
+void GameScene::checkAndRemoveSprite()
 {
-	SpriteShape* spr;
-	for (int r = 0; r < ROWS; ++r)
-	{
-		for (int c = 0; c < COLS; ++c)
-		{
+	SpriteShape *spr;
+	// 设定寿司的忽视检查，之前可能有精灵设置忽视检查，但这次检查要将之前所有的检查都不能忽视
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c) {
 			spr = map[r][c];
-			if (!spr)
-			{
+			if (!spr) {
 				continue;
 			}
-			if (spr->getIsNeedRemove())
-			{
+			spr->setIgnoreCheck(false);
+		}
+	}
+
+
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c) {
+			spr = map[r][c];
+			// 如果该位置没有精灵
+			if (!spr) {
 				continue;
 			}
-			std::list<SpriteShape*>colChainList;
+			// 如果该精灵需要被移除
+			if (spr->getIsNeedRemove()) {
+				continue;
+			}
+			// 如果该精灵是新生成的精灵
+			if (spr->getIgnoreCheck()) {
+				continue;
+			}
+
+			// 纵向相同精灵List
+			std::list< SpriteShape *> colChainList;
 			getColChain(spr, colChainList);
-			
-			std::list<SpriteShape*>rowChainList;
+			// 横向相同精灵List
+			std::list< SpriteShape *> rowChainList;
 			getRowChain(spr, rowChainList);
-			//得到较长的List
-			std::list<SpriteShape*>& longerList = colChainList.size() > rowChainList.size() ? colChainList : rowChainList;
-			if (longerList.size() < 3)//如果List小于3，直接跳过
-			{
-				continue;
+
+			std::list< SpriteShape *> longerList;
+			if (colChainList.size() >= rowChainList.size()) {
+				if (colChainList.size() < 3) {
+					continue;
+				}
+				longerList = colChainList;
+				isRow = false;
 			}
-			std::list<SpriteShape*>::iterator itList;
-			if (colChainList.size() > 2)
-			{
-				for (itList = colChainList.begin(); itList != colChainList.end(); ++itList)
-				{
-					spr = (SpriteShape*)*itList;
-					if (!spr)
-					{
+			else if (rowChainList.size() > colChainList.size()) {
+				if (rowChainList.size() < 3) {
+					continue;
+				}
+				longerList = rowChainList;
+				isRow = true;
+			}
+
+			std::list<SpriteShape *>::iterator itList;
+			// 标志 是否需要设定忽视检查的精灵
+			bool isSetedIgnoreCheck = false;
+
+			for (itList = longerList.begin(); itList != longerList.end(); ++itList) {
+				spr = (SpriteShape *)* itList;
+				if (!spr) {
+					continue;
+				}
+
+				if (longerList.size() > 3) {
+					if (spr == startSprite || spr == endSprite) {
+						isSetedIgnoreCheck = true;
+						spr->setIgnoreCheck(true);
+						spr->setIsNeedRemove(false);
+						spr->setDisplayMode(isRow ? DISPLAY_MODE_HORIZONTAL : DISPLAY_MODE_VERTICAL);
 						continue;
 					}
-					//标记需要删除的精灵
-					markRemove(spr);
 				}
+				markRemove(spr);
 			}
-			if (rowChainList.size() > 2)
-			{
-				for (itList = rowChainList.begin(); itList != rowChainList.end(); ++itList)
-				{
-					spr = (SpriteShape*)*itList;
-					if (!spr)
-					{
-						continue;
-					}
-					//标记需要删除的精灵
-					markRemove(spr);
-				}
+			// 如何是自由掉落产生的4消, 取最后一个变化为特殊精灵
+			if (!isSetedIgnoreCheck && longerList.size() > 3) {
+				spr->setIgnoreCheck(true);
+				spr->setIsNeedRemove(false);
+				spr->setDisplayMode(isRow ? DISPLAY_MODE_HORIZONTAL : DISPLAY_MODE_VERTICAL);
 			}
 		}
 	}
-	//删除被标记的精灵
+
+	// 消除标记了的精灵
 	removeSprite();
 }
 
-void GameScene::markRemove(SpriteShape* spr)//标记需要删除的精灵
-{
-	if (spr->getIsNeedRemove())//如果已经被标记，则直接返回
-	{
+
+// 标记可以移除的精灵
+void GameScene::markRemove(SpriteShape* spr) {
+
+	// 如果已经标记了要移除，就不需要再标记
+	if (spr->getIsNeedRemove()) {
 		return;
 	}
-	spr->setIsNeedRemove(true);
-}
+	// 如果该精灵被忽视，不需要标记
+	if (spr->getIgnoreCheck()) {
+		return;
+	}
 
-void GameScene::removeSprite()//删除精灵
-{
-	isAction = true;
-	for (int r = 0; r < ROWS; ++r)
-	{
-		for (int c = 0; c < COLS; ++c)
-		{
-			SpriteShape* spr = map[r][c];
-			if (!spr)//如果已经被删除，跳过这次循环
-			{
+	// 先标记自己
+	spr->setIsNeedRemove(true);
+	// 检查需要标记的精灵是否为 四消特殊精灵
+	if (spr->getDisplayMode() == DISPLAY_MODE_VERTICAL) {
+		for (int r = 0; r < ROWS; ++r) {
+			SpriteShape* tmp = map[r][spr->getCol()];
+			if (!tmp || tmp == spr) {
 				continue;
 			}
-			if (spr->getIsNeedRemove())//如果需要被删除，删除精灵，修改isFillSprite
-			{
+
+			if (tmp->getDisplayMode() == DISPLAY_MODE_NORMAL) {
+				tmp->setIsNeedRemove(true);
+			}
+			else {
+				markRemove(tmp);
+			}
+		}
+	}
+	else if (spr->getDisplayMode() == DISPLAY_MODE_HORIZONTAL) {
+		for (int c = 0; c < COLS; ++c) {
+			SpriteShape *tmp = map[spr->getRow()][c];
+			if (!tmp || tmp == spr) {
+				continue;
+			}
+
+			if (tmp->getDisplayMode() == DISPLAY_MODE_NORMAL) {
+				tmp->setIsNeedRemove(true);
+			}
+			else {
+				markRemove(tmp);
+			}
+		}
+	}
+}
+
+//移除精灵
+void GameScene::removeSprite()
+{
+	// 做一套移除的动作
+	isAction = true;
+
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c) {
+			SpriteShape* spr = map[r][c];
+			if (!spr) {
+				continue;
+			}
+
+			if (spr->getIsNeedRemove()) {
 				isFillSprite = true;
+
+				if (spr->getDisplayMode() == DISPLAY_MODE_HORIZONTAL)
+				{
+					explodeSpecialH(spr->getPosition());
+				}
+				else if (spr->getDisplayMode() == DISPLAY_MODE_VERTICAL)
+				{
+					explodeSpecialV(spr->getPosition());
+				}
 				explodeSprite(spr);
 			}
 		}
@@ -268,6 +347,73 @@ void GameScene::explodeSprite(SpriteShape* spr)//爆炸删除
 	spr->runAction(Sequence::create(ScaleTo::create(0.2f, 0.0),
 		CallFuncN::create(CC_CALLBACK_1(GameScene::actionEndCallBack, this)),
 		NULL));
+}
+
+
+
+// 精灵的横向消除
+void GameScene::explodeSpecialH(Point point)
+{
+	
+
+	// 先设置相应的变量
+	float scaleX = 4;
+	float scaleY = 0.7;
+	float time = 0.3;
+	Point startPosition = point;
+	float speed = 0.6f;
+
+	auto colorSpriteRight = Sprite::create("colorHRight.png");
+	addChild(colorSpriteRight, 10);
+	Point endPosition1 = Point(point.x - GAME_SCREEN_WIDTH, point.y);
+	colorSpriteRight->setPosition(startPosition);
+	colorSpriteRight->runAction(Sequence::create(ScaleTo::create(time, scaleX, scaleY),
+		MoveTo::create(speed, endPosition1),
+		CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, colorSpriteRight)),
+		NULL));
+
+	auto colorSpriteLeft = Sprite::create("colorHLeft.png");
+	addChild(colorSpriteLeft, 10);
+	Point endPosition2 = Point(point.x + GAME_SCREEN_WIDTH, point.y);
+	colorSpriteLeft->setPosition(startPosition);
+	colorSpriteLeft->runAction(Sequence::create(ScaleTo::create(time, scaleX, scaleY),
+		MoveTo::create(speed, endPosition2),
+		CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, colorSpriteLeft)),
+		NULL));
+
+
+}
+
+// 精灵的纵向消除
+void GameScene::explodeSpecialV(Point point)
+{
+	
+
+	float scaleY = 4;
+	float scaleX = 0.7;
+	float time = 0.3;
+	Point startPosition = point;
+	float speed = 0.6f;
+
+	auto colorSpriteDown = Sprite::create("colorVDown.png");
+	addChild(colorSpriteDown, 10);
+	Point endPosition1 = Point(point.x, point.y - GAME_SCREEN_HEIGHT);
+	colorSpriteDown->setPosition(startPosition);
+	colorSpriteDown->runAction(Sequence::create(ScaleTo::create(time, scaleX, scaleY),
+		MoveTo::create(speed, endPosition1),
+		CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, colorSpriteDown)),
+		NULL));
+
+	auto colorSpriteUp = Sprite::create("colorVUp.png");
+	addChild(colorSpriteUp, 10);
+	Point endPosition2 = Point(point.x, point.y + GAME_SCREEN_HEIGHT);
+	colorSpriteUp->setPosition(startPosition);
+	colorSpriteUp->runAction(Sequence::create(ScaleTo::create(time, scaleX, scaleY),
+		MoveTo::create(speed, endPosition2),
+		CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, colorSpriteUp)),
+		NULL));
+
+
 }
 
 void GameScene::actionEndCallBack(Node* node)//删除精灵函数
@@ -740,15 +886,17 @@ void GameScene::createSprite( int row , int col )
 {
 	
 	SpriteShape* temp = SpriteShape::create(row, col);
+
 	
 	// 创建下落动画
 	Point endPosition = getposition(row, col);
 	Point startPosition = Point(endPosition.x, endPosition.y + GAME_SCREEN_HEIGHT / 2);
     temp->setPosition(startPosition);
 	float speed = startPosition.y / (1.5 * GAME_SCREEN_HEIGHT );
-    temp->runAction(MoveTo::create(speed, endPosition));
+	temp->runAction(MoveTo::create(speed, endPosition));
     // 加入到spriteSheet中,等待绘制
     spriteSheet -> addChild(temp);
+	
 
     map[row][col] = temp;
 }

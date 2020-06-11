@@ -34,6 +34,8 @@ public:
 	void markRemove(SpriteShape* spr);
 	void removeSprite();
 	void explodeSprite(SpriteShape* spr);
+	void explodeSpecialV(Point);
+	void explodeSpecialH(Point);
 	void actionEndCallBack(Node* node);
 	void getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList);
 	void getRowChain(SpriteShape* spr, std::list<SpriteShape*>& chainList);
@@ -65,6 +67,7 @@ private:
 	bool isTouchEna;
 
 	int m_frequency;//สฃำเดฮสý
+	bool isRow;
 };
 
 #endif // __GAME_SCENE_H__
