@@ -2,8 +2,16 @@
 #include "SpriteShape.h"
 #include "WelcomeScene.h"
 #include"GameOverScene.h"
+#include "BagScene.h"
+#include "RankingScene.h"
 
 using namespace CocosDenshion;
+
+extern int score[10];
+extern int score_num;
+
+extern int fourDisappearNum;
+extern int plus5Num;
 
 GameScene::GameScene()
 	:spriteSheet(NULL)
@@ -631,6 +639,12 @@ void GameScene::myFrequency()
 	--m_frequency;
 	if (m_frequency == 0)//如果次数归0，直接结束游戏
 	{
+		//如果分数大于1000，获得增加次数道具
+		if (m_score > 1000)
+		{
+			plus5Num++;
+		}
+
 		Label* labelFrequency = (Label*)this->getChildByTag(11);
 		labelFrequency->setScale(0);
 		
@@ -642,7 +656,18 @@ void GameScene::myFrequency()
 		gmov->runAction(action);
 
 		auto scene = GameOver::createScene();
-		CCDirector::sharedDirector()->replaceScene(scene);
+		auto layer = GameOver::create();
+		auto rankingScene = RankingScene::createScene();
+		auto rankingLayer = RankingScene::create();
+		// 传递当前游戏获得的分数
+		layer->setScore(m_score);
+		scene->addChild(layer);
+
+		score[score_num] = m_score;
+		score_num++;
+
+		CCTransitionScene* reScene = CCTransitionFadeUp::create(1.0f, scene);
+		CCDirector::sharedDirector()->replaceScene(reScene);
 
 		return;
 	}
@@ -717,6 +742,41 @@ bool GameScene::init()
 	labelTime->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25, GAME_SCREEN_WIDTH / 2));
 	labelTime->setTag(11);
 	this->addChild(labelTime);
+
+	int* pfrequency = &m_frequency;
+
+	//添加两个道具照片和数据
+	//添加增加次数道具
+	TTFConfig configfour("fonts/fourDisappearNum.ttf", 30);
+	TTFConfig configplus("fonts/plus5Num.ttf", 30);
+	auto plus5Pic = MenuItemImage::create("plus5.png",
+		                                  "plus5.png",
+		                                  CC_CALLBACK_1(GameScene::menuPlus5Callback, this, pfrequency));
+	plus5Pic->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 - 50, GAME_SCREEN_WIDTH / 2 - 35));
+	plus5Pic->setScale(0.3);
+	//添加增加次数Num
+	auto labelplus5Num = Label::createWithTTF(configplus, "  0  ");
+	labelplus5Num->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 + 30, GAME_SCREEN_WIDTH / 2 - 35));
+	labelplus5Num->setString(StringUtils::format("  %d  ", plus5Num));
+	labelplus5Num->setTag(21);
+	this->addChild(labelplus5Num);
+
+	//添加四消道具
+	auto fourDisappearPic = MenuItemImage::create("fourDisappear.png",
+		                                          "fourDisappear.png",
+		                                          CC_CALLBACK_1(GameScene::menufourDisappearCallback, this));
+	fourDisappearPic->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 - 50, GAME_SCREEN_WIDTH / 2 - 80));
+	fourDisappearPic->setScale(0.3);
+	//添加四消Num
+	auto labelfourDisappearNum = Label::createWithTTF(configfour, "  0  ");
+	labelfourDisappearNum->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 + 30, GAME_SCREEN_WIDTH / 2 - 80));
+	labelfourDisappearNum->setString(StringUtils::format("  %d  ", fourDisappearNum));
+	labelfourDisappearNum->setTag(22);
+	this->addChild(labelfourDisappearNum);
+	//添加有两个道具的menu
+	auto menu2 = Menu::create(plus5Pic, fourDisappearPic, NULL);
+	menu2->setPosition(Vec2::ZERO);
+	this->addChild(menu2);
 
 	// 触摸事件处理
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -854,4 +914,26 @@ Point GameScene::positionOfItem(int row, int col)
 	float x = mapLBX + (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
 	float y = mapLBY + (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
 	return Point(x, y);
+}
+
+void GameScene::menuPlus5Callback(Ref* pSender, int*pfrequency)
+{
+	if (plus5Num == 0)
+		return;
+	if (plus5Num > 0)
+	{
+		m_frequency += 5;
+		plus5Num--;
+		Label* labelFrequency = (Label*)this->getChildByTag(11);
+		labelFrequency->setString(StringUtils::format("Frequency: %d", m_frequency));
+
+		Label* labelPlus5 = (Label*)this->getChildByTag(21);
+		labelPlus5->setString(StringUtils::format("%d", plus5Num));
+		return;
+	}
+}
+
+void GameScene::menufourDisappearCallback(Ref* pSender)
+{
+	return;
 }

@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "GameDefine.h"
+#include"RankingScene.h"
 
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -34,6 +35,10 @@ public:
 	void menuMusicMinusCallBack(Ref* pSender,SimpleAudioEngine* audio);
 	// 返回欢迎界面函数
 	void menuBackCallback( Ref* pSender );
+	//使用加次数道具
+	void menuPlus5Callback(Ref* pSender, int* frequency);
+	//使用四消道具
+	void menufourDisappearCallback(Ref* pSender);
 	// 得到对应行列精灵的坐标值
 	Point getposition( int row , int col );
 
@@ -63,6 +68,7 @@ public:
 	//检查是否是死地图
 	bool checkIfDeadMap();
 
+
 	CREATE_FUNC(GameScene);
 private:
 	// 绘制一批图片
@@ -73,11 +79,10 @@ private:
 	//操纵的精灵
 	SpriteShape* startSprite;
 	SpriteShape* endSprite;
-	int m_score;//分数
 	bool isAction, isFillSprite;//用来判断是否在执行动作，是否需要填补空缺
 	bool isTouchEna;
 	float musicNum;
-
+	int m_score;//分数
 	int m_frequency;//剩余次数
 };
 

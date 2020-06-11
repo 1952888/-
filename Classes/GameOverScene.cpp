@@ -58,7 +58,7 @@ bool GameOver::init()
 	this -> addChild( menu );
 
 	// ·ÖÊı
-	auto labelScore = Label::createWithTTF(config, "  0  ");
+	auto labelScore = Label::createWithTTF(config, "0");
 	labelScore->setColor(Color3B::BLUE);
 	labelScore -> setPosition(Point( GAME_SCREEN_WIDTH/2 , GAME_SCREEN_HEIGHT/3.5));
 	labelScore -> setTag(13);
