@@ -1,6 +1,6 @@
 #ifndef  _Inkmoo_Elimination_h_
 #define  _Inkmoo_Elimination_h_
-
+#define userDefault CCUserDefault::sharedUserDefault()
 // 定义屏幕宽高，这与所做的图片有关
 #define GAME_SCREEN_WIDTH 480
 #define GAME_SCREEN_HEIGHT 800
@@ -16,7 +16,7 @@
 // 精灵种类总数
 #define TOTAL_SPRITE 6
 
-
+#include "SimpleAudioEngine.h"
 
 // 精灵的显示模式，Hor 横向消除一行，Ver纵向消除一列
 enum DisplayMode 

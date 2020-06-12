@@ -1,19 +1,32 @@
 #include "GameScene.h"
-#include"GameDefine.h"
 #include "SpriteShape.h"
 #include "WelcomeScene.h"
 #include"GameOverScene.h"
+#include "BagScene.h"
+#include "RankingScene.h"
 
+using namespace CocosDenshion;
+
+extern int score[10];
+extern int score_num;
+
+extern int fourDisappearNum;
+extern int plus5Num;
+extern bool success;
+extern int status;
+extern int temp_score;
 GameScene::GameScene()
 	:spriteSheet(NULL)
-	,isFillSprite(false)
-	,isAction(true)
-	,isTouchEna(true)
-	, startSprite(NULL)
-	, endSprite(NULL)
-	,m_frequency(30)
-	,m_score(0)
+	, isFillSprite(false)
+	, isAction(true)
+	, isTouchEna(true)
+	, m_frequency(30)
+	,m_score(temp_score)
+	, musicNum(0.5)
+	, isUse(true)
+	,temp1(NULL)
 {
+	
 }
 
 void GameScene::update(float t)//更新每一帧
@@ -59,12 +72,16 @@ void GameScene::update(float t)//更新每一帧
 			}
 			removeSprite();
 			m_score -= 1080;
+
 		}
+
 	}
 	Label* labelScore = (Label*)this->getChildByTag(10);
 
 	labelScore->setString(StringUtils::format("Score: %d ", m_score));
 }
+
+
 
 bool GameScene::checkIfDeadMap()//查看是否是死地图
 {
@@ -172,8 +189,11 @@ bool GameScene::checkIfDeadMap()//查看是否是死地图
 			}
 		}
 	}
+
 	return false;
 }
+
+
 // 检测是否有精灵可以移除
 void GameScene::checkAndRemoveSprite()
 {
@@ -263,12 +283,12 @@ void GameScene::checkAndRemoveSprite()
 	removeSprite();
 }
 
-
 // 标记可以移除的精灵
 void GameScene::markRemove(SpriteShape* spr) {
 
 	// 如果已经标记了要移除，就不需要再标记
-	if (spr->getIsNeedRemove()) {
+	if (spr->getIsNeedRemove()) 
+	{
 		return;
 	}
 	// 如果该精灵被忽视，不需要标记
@@ -279,7 +299,8 @@ void GameScene::markRemove(SpriteShape* spr) {
 	// 先标记自己
 	spr->setIsNeedRemove(true);
 	// 检查需要标记的精灵是否为 四消特殊精灵
-	if (spr->getDisplayMode() == DISPLAY_MODE_VERTICAL) {
+	if (spr->getDisplayMode() == DISPLAY_MODE_VERTICAL)
+	{
 		for (int r = 0; r < ROWS; ++r) {
 			SpriteShape* tmp = map[r][spr->getCol()];
 			if (!tmp || tmp == spr) {
@@ -311,7 +332,7 @@ void GameScene::markRemove(SpriteShape* spr) {
 	}
 }
 
-//移除精灵
+// 移除精灵
 void GameScene::removeSprite()
 {
 	// 做一套移除的动作
@@ -350,7 +371,6 @@ void GameScene::explodeSprite(SpriteShape* spr)//爆炸删除
 }
 
 
-
 // 精灵的横向消除
 void GameScene::explodeSpecialH(Point point)
 {
@@ -387,7 +407,6 @@ void GameScene::explodeSpecialH(Point point)
 // 精灵的纵向消除
 void GameScene::explodeSpecialV(Point point)
 {
-	
 
 	float scaleY = 4;
 	float scaleX = 0.7;
@@ -416,11 +435,15 @@ void GameScene::explodeSpecialV(Point point)
 
 }
 
+// 对移除的精灵进行的操作
+
 void GameScene::actionEndCallBack(Node* node)//删除精灵函数
 {
 	SpriteShape* spr = (SpriteShape*)node;
 	map[spr->getRow()][spr->getCol()] = NULL;
 	spr->removeFromParent();
+	//加载爆炸音乐
+	SimpleAudioEngine::sharedEngine()->playEffect("music_explode.wav", false);
 }
 
 void GameScene::getColChain(SpriteShape* spr, std::list<SpriteShape*>& chainList)//获取左右相同精灵的List
@@ -482,7 +505,7 @@ void GameScene::getRowChain(SpriteShape* spr, std::list<SpriteShape*>&chainList)
 			break;
 		}
 	}
-	
+
 	neighborRow = spr->getRow() + 1;//向下
 	while (neighborRow < ROWS)
 	{
@@ -557,17 +580,32 @@ void GameScene::fillSprite()//填充精灵，是先让已存在的精灵下落，之后在创建新的精
 
 
 // 开始触摸
-bool GameScene::onTouchBegan(Touch *touch, Event *unused) 
+bool GameScene::onTouchBegan(Touch *touch, Event *unused)
 {
 	startSprite = NULL;
 	endSprite = NULL;
 
-	if (isTouchEna) 
+	if (isTouchEna)
 	{
-		auto position= touch->getLocation();
+		auto position = touch->getLocation();
 		startSprite = spriteOfPoint(&position);
 	}
 	return isTouchEna;
+}
+
+bool GameScene::onTouchBegan1(Touch *touch, Event *unused)
+{
+	temp1 = NULL;
+
+	if (!isUse)
+	{
+		auto position = touch->getLocation();
+		temp1 = spriteOfPoint(&position);
+		isUse++;
+	}
+	return isUse;
+
+	
 }
 
 // 触摸后移动的方向
@@ -595,7 +633,7 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 		SPRITE_WIDTH);
 
 	// 判断是在向哪个方向移动，
-	if (upRect.containsPoint(location)) 
+	if (upRect.containsPoint(location))
 	{
 		row++;
 		if (row < ROWS)
@@ -614,7 +652,7 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 	if (downRect.containsPoint(location))
 	{
 		row--;
-		if (row >= 0) 
+		if (row >= 0)
 		{
 			endSprite = map[row][col];
 		}
@@ -627,10 +665,10 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 		SPRITE_WIDTH,
 		SPRITE_WIDTH);
 
-	if (leftRect.containsPoint(location)) 
+	if (leftRect.containsPoint(location))
 	{
 		col--;
-		if (col >= 0) 
+		if (col >= 0)
 		{
 			endSprite = map[row][col];
 		}
@@ -643,10 +681,10 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 		SPRITE_WIDTH,
 		SPRITE_WIDTH);
 
-	if (rightRect.containsPoint(location)) 
+	if (rightRect.containsPoint(location))
 	{
 		col++;
-		if (col < COLS) 
+		if (col < COLS)
 		{
 			endSprite = map[row][col];
 		}
@@ -656,6 +694,86 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 
 	// 否则，并非一个有效的移动
 }
+
+
+void GameScene::onTouchMoved1(Touch *touch, Event *unused)
+{
+	// 如果没有初始精灵 或者 触摸事件不可行，直接返回
+	if (!temp1 || !isUse)
+	{
+		return;
+	}
+
+	// 获取移动到的 点 的位置
+	auto location = touch->getLocation();
+	auto halfSpriteWidth = SPRITE_WIDTH / 2;
+	auto halfSpriteHeight = SPRITE_WIDTH / 2;
+
+	auto  upRect = Rect(temp1->getPositionX() - halfSpriteWidth,
+		temp1->getPositionY() + halfSpriteHeight,
+		SPRITE_WIDTH,
+		SPRITE_WIDTH);
+
+	// 判断是在向哪个方向移动，
+	if (upRect.containsPoint(location))
+	{
+		
+		temp1->setDisplayMode(  DISPLAY_MODE_VERTICAL);
+		markRemove(temp1);
+		removeSprite();
+	
+		
+		return;
+	}
+
+	auto  downRect = Rect(temp1->getPositionX() - halfSpriteWidth,
+		temp1->getPositionY() - (halfSpriteHeight * 3),
+		SPRITE_WIDTH,
+		SPRITE_WIDTH);
+
+	if (downRect.containsPoint(location))
+	{
+		
+		temp1->setDisplayMode(DISPLAY_MODE_VERTICAL);
+		markRemove(temp1);
+		removeSprite();
+		
+		return;
+	}
+
+	auto  leftRect = Rect(temp1->getPositionX() - (halfSpriteWidth * 3),
+		temp1->getPositionY() - halfSpriteHeight,
+		SPRITE_WIDTH,
+		SPRITE_WIDTH);
+
+	if (leftRect.containsPoint(location))
+	{
+		
+		temp1->setDisplayMode(DISPLAY_MODE_HORIZONTAL);
+		markRemove(temp1);
+		removeSprite();
+			//explodeSpecialH(temp1->getPosition());
+		
+		return;
+	}
+
+	auto  rightRect = Rect(temp1->getPositionX() + halfSpriteWidth,
+		temp1->getPositionY() - halfSpriteHeight,
+		SPRITE_WIDTH,
+		SPRITE_WIDTH);
+
+	if (rightRect.containsPoint(location))
+	{
+		
+		temp1->setDisplayMode(DISPLAY_MODE_HORIZONTAL);
+		markRemove(temp1);
+		removeSprite();
+		return;
+	}
+
+	// 否则，并非一个有效的移动
+}
+
 
 // 根据触摸的点位置，返回是地图中哪个精灵
 SpriteShape *GameScene::spriteOfPoint(Point *point)
@@ -671,13 +789,13 @@ SpriteShape *GameScene::spriteOfPoint(Point *point)
 		for (int j = 0; j < COLS; j++)
 		{
 			spr = map[i][j];
-			if (spr) 
+			if (spr)
 			{
 				rect.origin.x = spr->getPositionX() - (SPRITE_WIDTH / 2);
 				rect.origin.y = spr->getPositionY() - (SPRITE_WIDTH / 2);
 
 				rect.size = sz;
-				if (rect.containsPoint(*point)) 
+				if (rect.containsPoint(*point))
 				{
 					return spr;
 				}
@@ -689,14 +807,14 @@ SpriteShape *GameScene::spriteOfPoint(Point *point)
 }
 
 // 交换精灵
-void GameScene::swapSprite() 
+void GameScene::swapSprite()
 {
 	// 移动中，不允许再次触摸，执行动作设置为true
 	isAction = true;
 	isTouchEna = false;
 
 	// 初始精灵 和 终止精灵 均不能为空
-	if (!startSprite || !endSprite) 
+	if (!startSprite || !endSprite)
 	{
 		return;
 	}
@@ -760,6 +878,7 @@ void GameScene::swapSprite()
 		MoveTo::create(time, posOfSrc),
 		MoveTo::create(time, posOfDest),
 		NULL));
+	myFrequency();
 }
 
 //放置剩余次数
@@ -768,9 +887,22 @@ void GameScene::myFrequency()
 	--m_frequency;
 	if (m_frequency == 0)//如果次数归0，直接结束游戏
 	{
+		//如果分数大于1000，获得增加次数道具
+		if (m_score-temp_score> 1000)
+		{
+			plus5Num++;
+		}
+		if (m_score-temp_score > 2000)
+		{
+			fourDisappearNum++;
+		}
+		if (m_score > status*1000+4000)
+		{
+			success = true;
+		}
 		Label* labelFrequency = (Label*)this->getChildByTag(11);
 		labelFrequency->setScale(0);
-		
+
 		auto gmov = Sprite::create("pic_gameover.png");
 		gmov->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH * 1.5));
 		this->addChild(gmov);
@@ -778,14 +910,28 @@ void GameScene::myFrequency()
 		auto action = MoveTo::create(3.0f, Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2));
 		gmov->runAction(action);
 
-		auto scene = Scene::create();
+		auto scene = GameOver::createScene();
 		auto layer = GameOver::create();
+		
+
+		if (!success)
+		{
+			auto rankingScene = RankingScene::createScene();
+			auto rankingLayer = RankingScene::create();
+			score[score_num] = m_score;
+			score_num++;
+		}
+		else
+			temp_score = m_score;
+
 		// 传递当前游戏获得的分数
 		layer->setScore(m_score);
 		scene->addChild(layer);
+		
 
 		CCTransitionScene* reScene = CCTransitionFadeUp::create(1.0f, scene);
-		CCDirector::sharedDirector()->replaceScene(reScene);;
+		CCDirector::sharedDirector()->replaceScene(reScene);
+
 		return;
 	}
 	if (m_frequency > 0)//大于零，改变输出的数字
@@ -795,47 +941,60 @@ void GameScene::myFrequency()
 	}
 }
 
-Scene* GameScene::createScene()	{
-    auto scene = Scene::create();
-    auto layer = GameScene::create();
-    scene->addChild(layer);
+
+Scene* GameScene::createScene() 
+{
+	auto scene = Scene::create();
+	auto layer = GameScene::create();
+	scene->addChild(layer);
 	return scene;
 }
 
 // 欢迎界面 初始化函数
-bool GameScene::init()	
+bool GameScene::init()
 {
 	// 先初始化父类，不成功返回false
-	if( !Layer::init() )	
+	if (!Layer::init())
 	{
 		return false;
 	}
 
+	//添加音乐
+	SimpleAudioEngine* audio = SimpleAudioEngine::getInstance();
+	audio->playBackgroundMusic("music_bg.mp3");
+	audio->setBackgroundMusicVolume(0);
+
 	// 加载plist和png
-    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
-    spriteSheet = SpriteBatchNode::create("icon.png");
-    addChild(spriteSheet);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
+	spriteSheet = SpriteBatchNode::create("icon.png");
+	addChild(spriteSheet);
 	mapLBX = (GAME_SCREEN_WIDTH - SPRITE_WIDTH * COLS - (COLS - 1) * BOADER_WIDTH) / 2;
 	mapLBY = (GAME_SCREEN_HEIGHT - SPRITE_WIDTH * ROWS - (ROWS - 1) * BOADER_WIDTH) / 2;
 
-
-
 	// 添加背景图片
 	auto sprite = Sprite::create("scene_bg.png");
-	sprite->setPosition(Point(GAME_SCREEN_WIDTH/2,GAME_SCREEN_HEIGHT/2));
-    this->addChild(sprite,-1);
+	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
+	this->addChild(sprite, -1);
 
 	// 添加返回按钮
 	auto backItem = MenuItemImage::create(
-                                           "btn_back01.png",
-                                           "btn_back02.png",
-										   CC_CALLBACK_1(GameScene::menuBackCallback, this));
-	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH-backItem->getContentSize().width/2,backItem->getContentSize().height/2));
+		"btn_back01.png",
+		"btn_back02.png",
+		CC_CALLBACK_1(GameScene::menuBackCallback, this));
+	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH - backItem->getContentSize().width / 2, backItem->getContentSize().height / 2));
 
-	auto menu = Menu::create(backItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-	this -> addChild( menu );
-	
+	//添加设置按钮
+	auto set_upItem = MenuItemImage::create("set_up.png",
+		"set_up.png",
+		CC_CALLBACK_1(GameScene::menuSetupCallBack, this, audio));
+	set_upItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.1, GAME_SCREEN_WIDTH / 1.7));
+	set_upItem->setScale(0.1);
+
+
+	auto menu = Menu::create(backItem, set_upItem, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu);
+
 	// 加载ttf字体
 	TTFConfig config("fonts/haibaoti.ttf", 30);
 	//显示分数
@@ -843,70 +1002,187 @@ bool GameScene::init()
 	labelScore->setPosition(Vec2(GAME_SCREEN_WIDTH - backItem->getContentSize().width / 2, backItem->getContentSize().height / 2 + labelScore->getContentSize().height * 2.6));
 	labelScore->setTag(10);
 	this->addChild(labelScore);
+
 	
-	//添加监听器
 	auto labelTime = Label::createWithTTF(config, StringUtils::format("Frequency: %d", m_frequency));
 	labelTime->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25, GAME_SCREEN_WIDTH / 2));
 	labelTime->setTag(11);
 	this->addChild(labelTime);
 
-	// 触摸事件处理
-	auto touchListener = EventListenerTouchOneByOne::create();
-	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-	touchListener->setSwallowTouches(true);
+	int* pfrequency = &m_frequency;
+
+	//添加两个道具照片和数据
+	//添加增加次数道具
+	TTFConfig configfour("fonts/fourDisappearNum.ttf", 30);
+	TTFConfig configplus("fonts/plus5Num.ttf", 30);
+	auto plus5Pic = MenuItemImage::create("plus5.png",
+		"plus5.png",
+		CC_CALLBACK_1(GameScene::menuPlus5Callback, this, pfrequency));
+	plus5Pic->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 - 50, GAME_SCREEN_WIDTH / 2 - 35));
+	plus5Pic->setScale(0.3);
+
+	//添加增加次数Num
+	auto labelplus5Num = Label::createWithTTF(configplus, "  0  ");
+	labelplus5Num->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 + 30, GAME_SCREEN_WIDTH / 2 - 35));
+	labelplus5Num->setString(StringUtils::format("  %d  ", plus5Num));
+	labelplus5Num->setTag(21);
+	this->addChild(labelplus5Num);
+
+	//添加四消道具
+	auto fourDisappearPic = MenuItemImage::create("fourDisappear.png",
+		"fourDisappear.png",
+		CC_CALLBACK_1(GameScene::menufourDisappearCallback, this));
+	fourDisappearPic->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 - 50, GAME_SCREEN_WIDTH / 2 - 80));
+	fourDisappearPic->setScale(0.3);
+	//添加四消Num
+	auto labelfourDisappearNum = Label::createWithTTF(configfour, "  0  ");
+	labelfourDisappearNum->setPosition(Vec2(GAME_SCREEN_WIDTH / 1.25 + 30, GAME_SCREEN_WIDTH / 2 - 80));
+	labelfourDisappearNum->setString(StringUtils::format("  %d  ", fourDisappearNum));
+	labelfourDisappearNum->setTag(22);
+	this->addChild(labelfourDisappearNum);
+	//添加有两个道具的menu
+	auto menu2 = Menu::create(plus5Pic, fourDisappearPic, NULL);
+	menu2->setPosition(Vec2::ZERO);
+	this->addChild(menu2);
+
+
+
+	auto touchListener1= EventListenerTouchOneByOne::create();
+
+	touchListener1->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan1, this);
+	touchListener1->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved1, this);
+	_eventDispatcher->addEventListenerWithFixedPriority(touchListener1, 1);
+
+
+	
+	auto touchListener2= EventListenerTouchOneByOne::create();
+	touchListener2->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	touchListener2->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
+	_eventDispatcher->addEventListenerWithFixedPriority(touchListener2, 2);
+	
+
 	initMap();
 	scheduleUpdate();
 	return true;
 }
 
 // 返回函数，跳转到欢迎界面
-void GameScene::menuBackCallback( Ref* pSender )	
+void GameScene::menuBackCallback(Ref* pSender)
 {
 	auto scene = WelcomeScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
 }
 
-// 初始化地图
-void GameScene::initMap( )	
+//设置函数，打开设置界面
+void GameScene::menuSetupCallBack(Ref* pSender, SimpleAudioEngine* audio)
 {
-	
-	for( int i = 0 ; i < ROWS ;i++ )
+	auto spriteSetup = Sprite::create("setup.png");
+	spriteSetup->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_WIDTH / 2.3)));
+	spriteSetup->setScale(0.2);
+	this->addChild(spriteSetup);
+
+	auto musicStrItem = MenuItemImage::create("music_str.png",
+		"music_str.png",
+		CC_CALLBACK_1(GameScene::menuMusicStrCallBack, this));
+	musicStrItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.8, GAME_SCREEN_WIDTH / 0.5)));
+	musicStrItem->setScale(2);
+
+	auto musicCloseItem = MenuItemImage::create("musicclose.png",
+		"musicclose.png",
+		CC_CALLBACK_1(GameScene::menuMusicCloseCallBack, this));
+	musicCloseItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 1.1, GAME_SCREEN_WIDTH / 0.5)));
+	musicCloseItem->setScale(2);
+
+	auto musicPlusItem = MenuItemImage::create("plus.png",
+		"plus.png",
+		CC_CALLBACK_1(GameScene::menuMusicPlusCallBack, this, audio));
+	musicPlusItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.65, GAME_SCREEN_WIDTH / 0.7)));
+	musicPlusItem->setScale(0.5);
+
+	auto musicMinusItem = MenuItemImage::create("minus.png",
+		"minus.png",
+		CC_CALLBACK_1(GameScene::menuMusicMinusCallBack, this, audio));
+	musicMinusItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 1.8, GAME_SCREEN_WIDTH / 0.7)));
+	musicMinusItem->setScale(0.5);
+
+	auto deleteItem = MenuItemImage::create("delete.png",
+		"delete.png",
+		CC_CALLBACK_1(GameScene::menuReturnCallBack, this, spriteSetup));
+	deleteItem->setPosition(Vec2(Point(GAME_SCREEN_WIDTH / 0.49, GAME_SCREEN_WIDTH / 0.49)));
+	deleteItem->setScale(0.3);
+
+	auto menu = Menu::create(musicStrItem, musicCloseItem, deleteItem, musicMinusItem, musicPlusItem, NULL);
+	menu->setPosition(Vec2::ZERO);
+	spriteSetup->addChild(menu);
+
+}
+
+void GameScene::menuMusicPlusCallBack(Ref* pSender, SimpleAudioEngine* audio)
+{
+	musicNum += 1;
+	audio->setBackgroundMusicVolume(musicNum);
+}
+
+void GameScene::menuMusicMinusCallBack(Ref* pSender, SimpleAudioEngine* audio)
+{
+	musicNum -= 1;
+	audio->setBackgroundMusicVolume(musicNum);
+}
+
+//关闭设置界面
+void GameScene::menuReturnCallBack(Ref* pSender, Sprite* spr)
+{
+	spr->removeFromParent();
+}
+
+//音乐开始函数
+void GameScene::menuMusicStrCallBack(Ref* pSender)
+{
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
+}
+
+//音乐暂停函数
+void GameScene::menuMusicCloseCallBack(Ref* pSender)
+{
+	SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+}
+
+// 初始化地图
+void GameScene::initMap()
+{
+	for (int i = 0; i < ROWS; i++)
 	{
-		for( int j = 0 ; j < COLS ; j++)
+		for (int j = 0; j < COLS; j++)
 		{
-			createSprite(i,j);
+			createSprite(i, j);
 		}
 	}
 }
 
 // 创建精灵
-void GameScene::createSprite( int row , int col )	
+void GameScene::createSprite(int row, int col)
 {
-	
+
 	SpriteShape* temp = SpriteShape::create(row, col);
 
-	
 	// 创建下落动画
 	Point endPosition = getposition(row, col);
 	Point startPosition = Point(endPosition.x, endPosition.y + GAME_SCREEN_HEIGHT / 2);
-    temp->setPosition(startPosition);
-	float speed = startPosition.y / (1.5 * GAME_SCREEN_HEIGHT );
+	temp->setPosition(startPosition);
+	float speed = startPosition.y / (1.5 * GAME_SCREEN_HEIGHT);
 	temp->runAction(MoveTo::create(speed, endPosition));
-    // 加入到spriteSheet中,等待绘制
-    spriteSheet -> addChild(temp);
-	
+	// 加入到spriteSheet中,等待绘制
+	spriteSheet->addChild(temp);
 
-    map[row][col] = temp;
+	map[row][col] = temp;
 }
 
 // 根据行列，获取坐标值
-Point GameScene::getposition(int row , int col)
+Point GameScene::getposition(int row, int col)
 {
 	float x = (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
-    float y = (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
-    return Point(x, y);
+	float y = (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
+	return Point(x, y);
 }
 
 Point GameScene::positionOfItem(int row, int col)
@@ -915,3 +1191,36 @@ Point GameScene::positionOfItem(int row, int col)
 	float y = mapLBY + (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
 	return Point(x, y);
 }
+
+void GameScene::menuPlus5Callback(Ref* pSender, int*pfrequency)
+{
+	if (plus5Num == 0)
+		return;
+	if (plus5Num > 0)
+	{
+		m_frequency += 5;
+		plus5Num--;
+		Label* labelFrequency = (Label*)this->getChildByTag(11);
+		labelFrequency->setString(StringUtils::format("Frequency: %d", m_frequency));
+
+		Label* labelPlus5 = (Label*)this->getChildByTag(21);
+		labelPlus5->setString(StringUtils::format("%d", plus5Num));
+		return;
+	}
+}
+
+void GameScene::menufourDisappearCallback(Ref* pSender)
+{
+	if (fourDisappearNum == 0)
+		return;
+	if (fourDisappearNum > 0)
+	{
+		isUse = 0;
+		fourDisappearNum-=1;
+	
+		Label* labelfourDisappearNum = (Label*)this->getChildByTag(22);
+		labelfourDisappearNum->setString(StringUtils::format("%d", fourDisappearNum));
+		return;
+	}
+}
+
