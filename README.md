@@ -90,3 +90,58 @@ static const char *spriteNormal[TOTAL_SPRITE] = {
 	mapLBX = (GAME_SCREEN_WIDTH - SPRITE_WIDTH * COLS - (COLS - 1) * BOADER_WIDTH) / 2;
 	mapLBY = (GAME_SCREEN_HEIGHT - SPRITE_WIDTH * ROWS - (ROWS - 1) * BOADER_WIDTH) / 2;
 ```
+	
+	
+	isAction和isFillsprite以及isTouch和update函数的使用是整个GameScene的核心
+```c
+	void GameScene::update(float t)//更新每一帧
+{
+	if (isAction)//如果正在动作，查看是否有其他精灵正在动作
+	{
+		isAction = false;
+		for (int r = 0; r < ROWS; ++r)
+		{
+			for (int c = 0; c < COLS; ++c)
+			{
+				SpriteShape* spr = map[r][c];
+				if (spr && spr->getNumberOfRunningActions() > 0)
+				{
+					isAction = true;
+					break;
+				}
+			}
+		}
+	}
+
+	// 如果精灵正在移动中，忽视触摸事件
+	isTouchEna = !isAction;
+	if (!isAction)//如果不在动作，查看是否需要填充精灵，如果不需要填充精灵，查看是否要移除精灵
+	{
+		if (isFillSprite)
+		{
+			fillSprite();
+			isFillSprite = false;
+		}
+		else
+		{
+			checkAndRemoveSprite();
+		}
+		if (!checkIfDeadMap())
+		{
+			for (int r = 0; r < ROWS; ++r)
+			{
+				for (int c = 0; c < COLS; ++c)
+				{
+					markRemove(map[r][c]);
+				}
+			}
+			removeSprite();
+			m_score -= 1080;
+		}
+
+	}
+	Label* labelScore = (Label*)this->getChildByTag(10);
+
+	labelScore->setString(StringUtils::format("Score: %d ", m_score));
+}
+```
