@@ -11,18 +11,18 @@
 
 项目成员：
 ---------
-邵卓尔 1952888
-姚亮亮 1951018
-项目Github地址：https://github.com/1952888/-
+	邵卓尔 1952888
+	姚亮亮 1951018
+	项目Github地址：https://github.com/1952888/-
 
 项目开发文档：
 ------------
--选用引擎：cocos2d-x 3.17.2
--辅助软件：sourcetree，TexturePackerGUI
--支持平台：Windows
--小组分工：
-	-邵卓尔：欢迎界面，消除算法，判断死地图，增加次数道具，排行榜，音乐，步数限制，音乐暂停，音量的大小调整
-	-姚亮亮：
+	-选用引擎：cocos2d-x 3.17.2
+	-辅助软件：sourcetree，TexturePackerGUI
+	-支持平台：Windows
+	-小组分工：
+		-邵卓尔：欢迎界面，消除算法，判断死地图，增加次数道具，排行榜，音乐，步数限制，音乐暂停，音量的大小调整
+		-姚亮亮：
 
 评分项完成度：
 ------------
@@ -56,5 +56,37 @@ Plist文件的使用：
 
 代码亮点：
 ----------
-  -使用GameDefine
+	GameDefine.h的使用
+ 	使用GameDefine.h保存了各种常量属性
+```c	
+#define GAME_SCREEN_WIDTH 480
+#define GAME_SCREEN_HEIGHT 800
 
+#define SPRITE_WIDTH 48
+#define BOADER_WIDTH 2
+
+#define ROWS 6
+#define COLS 6
+
+#define TOTAL_SPRITE 6
+
+#include "SimpleAudioEngine.h"
+
+static const char *spriteNormal[TOTAL_SPRITE] = {
+	"icon1.png",
+	"icon2.png",
+	"icon3.png",
+	"icon4.png",
+	"icon5.png",
+    "icon6.png"
+};
+```
+
+	Plist文件的使用
+```c
+ SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
+    spriteSheet = SpriteBatchNode::create("icon.png");
+    addChild(spriteSheet);
+	mapLBX = (GAME_SCREEN_WIDTH - SPRITE_WIDTH * COLS - (COLS - 1) * BOADER_WIDTH) / 2;
+	mapLBY = (GAME_SCREEN_HEIGHT - SPRITE_WIDTH * ROWS - (ROWS - 1) * BOADER_WIDTH) / 2;
+```
