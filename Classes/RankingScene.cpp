@@ -1,7 +1,14 @@
+<<<<<<< HEAD
+#include<GameDefine.h>
+#include<WelcomeScene.h>
+#include<RankingScene.h>
+#include<algorithm>
+=======
 #include"GameDefine.h"
 #include"WelcomeScene.h"
 #include"RankingScene.h"
 //#include<algorithm>
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 
 using namespace std;
 

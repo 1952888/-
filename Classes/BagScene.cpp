@@ -1,12 +1,23 @@
+<<<<<<< HEAD
+#include<GameDefine.h>
+#include<WelcomeScene.h>
+#include<BagScene.h>
+#include<algorithm>
+=======
 #include"GameDefine.h"
 #include"WelcomeScene.h"
 #include"BagScene.h"
 //#include<algorithm>
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 
 using namespace std;
 
 extern int fourDisappearNum;
 extern int plus5Num;
+<<<<<<< HEAD
+
+=======
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 USING_NS_CC;
 using namespace CocosDenshion;
 

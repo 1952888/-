@@ -20,7 +20,11 @@ public:
 	// 初始化地图
 	void initMap();
 	// 创建精灵
+<<<<<<< HEAD
+	void createSprite( int row , int col );
+=======
 	void createSprite(int row, int col);
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	//打开设置界面
 	void menuSetupCallBack(Ref* pSender, SimpleAudioEngine* audio);
 	//关闭设置界面
@@ -32,9 +36,15 @@ public:
 	//调高音量
 	void menuMusicPlusCallBack(Ref* pSender, SimpleAudioEngine* audio);
 	//降低音量
+<<<<<<< HEAD
+	void menuMusicMinusCallBack(Ref* pSender,SimpleAudioEngine* audio);
+	// 返回欢迎界面函数
+	void menuBackCallback( Ref* pSender );
+=======
 	void menuMusicMinusCallBack(Ref* pSender, SimpleAudioEngine* audio);
 	// 返回欢迎界面函数
 	void menuBackCallback(Ref* pSender);
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	//使用加次数道具
 	void menuPlus5Callback(Ref* pSender, int* frequency);
 	//使用四消道具
@@ -71,6 +81,11 @@ public:
 	void myFrequency();
 	//检查是否是死地图
 	bool checkIfDeadMap();
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	CREATE_FUNC(GameScene);
 private:
 	// 绘制一批图片
@@ -81,7 +96,10 @@ private:
 	//操纵的精灵
 	SpriteShape* startSprite;
 	SpriteShape* endSprite;
+<<<<<<< HEAD
+=======
 	SpriteShape* temp1;
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	bool isAction, isFillSprite;//用来判断是否在执行动作，是否需要填补空缺
 	bool isTouchEna;
 	float musicNum;

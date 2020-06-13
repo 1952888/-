@@ -7,8 +7,12 @@
 
 USING_NS_CC;
 using namespace CocosDenshion;
+<<<<<<< HEAD
+
+=======
 extern int status;
 extern int temp_score;
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 Scene* WelcomeScene::createScene()
 {
 	return WelcomeScene::create();
@@ -34,6 +38,10 @@ bool WelcomeScene::init()
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("music_bg.mp3");
 	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
 
+	//加载背景音乐
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("music_bg.mp3");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
+
 	auto sprite = Sprite::create("scene_bg.png");//放置开始界面背景
 	if (sprite == nullptr)
 	{
@@ -54,9 +62,15 @@ bool WelcomeScene::init()
 	this->addChild(title, 1);
 
 	//放置排行榜按钮，用于切换排行榜
+<<<<<<< HEAD
+	auto rankingItem = MenuItemImage::create("ranking.png", 
+		                                     "ranking2.png", 
+		                                     CC_CALLBACK_1(WelcomeScene::menuRankingCallback, this));
+=======
 	auto rankingItem = MenuItemImage::create("ranking.png",
 		"ranking2.png",
 		CC_CALLBACK_1(WelcomeScene::menuRankingCallback, this));
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	if (rankingItem == nullptr ||
 		rankingItem->getContentSize().width <= 0 ||
 		rankingItem->getContentSize().height <= 0)
@@ -69,8 +83,13 @@ bool WelcomeScene::init()
 
 	//放置背包按钮，切换到背包界面
 	auto bagItem = MenuItemImage::create("bag.png",
+<<<<<<< HEAD
+		                                 "bag2.png",
+		                                 CC_CALLBACK_1(WelcomeScene::menuBagCallback, this));
+=======
 		"bag2.png",
 		CC_CALLBACK_1(WelcomeScene::menuBagCallback, this));
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	if (bagItem == nullptr ||
 		bagItem->getContentSize().width <= 0 ||
 		bagItem->getContentSize().height <= 0)
@@ -140,4 +159,8 @@ void WelcomeScene::menuBagCallback(Ref* pSender)
 {
 	auto scene = BagScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
