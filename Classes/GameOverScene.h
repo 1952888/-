@@ -22,6 +22,7 @@ public:
 	void menuExitCallback(Ref *pSender);
 	void menuRestartCallback(Ref *pSender);
 	void menuBackCallback( Ref *pSender );
+	void menuNextCallback(Ref *pSender);
 };
 
 

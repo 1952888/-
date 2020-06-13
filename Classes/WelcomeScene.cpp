@@ -7,27 +7,36 @@
 
 USING_NS_CC;
 using namespace CocosDenshion;
+<<<<<<< HEAD
 
+=======
+extern int status;
+extern int temp_score;
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 Scene* WelcomeScene::createScene()
 {
-    return WelcomeScene::create();
+	return WelcomeScene::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
-    printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in WelcomeScene.cpp\n");
+	printf("Error while loading: %s\n", filename);
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in WelcomeScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
 bool WelcomeScene::init()
 {
 
-    //////////////////////////////
-    // 1. super init first
-    auto visibleSize = Director::getInstance()->getVisibleSize();//获取屏幕尺寸和原点坐标
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	//////////////////////////////
+	// 1. super init first
+	auto visibleSize = Director::getInstance()->getVisibleSize();//获取屏幕尺寸和原点坐标
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	//加载背景音乐
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("music_bg.mp3");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music_bg.mp3", true);
 
 	//加载背景音乐
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("music_bg.mp3");
@@ -44,7 +53,7 @@ bool WelcomeScene::init()
 
 	//放置标题 开心消消乐
 	auto title = Sprite::create("title.png");
-	if(title == nullptr)
+	if (title == nullptr)
 	{
 		problemLoading("title.png");
 	}
@@ -53,9 +62,15 @@ bool WelcomeScene::init()
 	this->addChild(title, 1);
 
 	//放置排行榜按钮，用于切换排行榜
+<<<<<<< HEAD
 	auto rankingItem = MenuItemImage::create("ranking.png", 
 		                                     "ranking2.png", 
 		                                     CC_CALLBACK_1(WelcomeScene::menuRankingCallback, this));
+=======
+	auto rankingItem = MenuItemImage::create("ranking.png",
+		"ranking2.png",
+		CC_CALLBACK_1(WelcomeScene::menuRankingCallback, this));
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	if (rankingItem == nullptr ||
 		rankingItem->getContentSize().width <= 0 ||
 		rankingItem->getContentSize().height <= 0)
@@ -68,8 +83,13 @@ bool WelcomeScene::init()
 
 	//放置背包按钮，切换到背包界面
 	auto bagItem = MenuItemImage::create("bag.png",
+<<<<<<< HEAD
 		                                 "bag2.png",
 		                                 CC_CALLBACK_1(WelcomeScene::menuBagCallback, this));
+=======
+		"bag2.png",
+		CC_CALLBACK_1(WelcomeScene::menuBagCallback, this));
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 	if (bagItem == nullptr ||
 		bagItem->getContentSize().width <= 0 ||
 		bagItem->getContentSize().height <= 0)
@@ -81,9 +101,9 @@ bool WelcomeScene::init()
 	bagItem->setScale(0.3);
 
 	//放置开始游戏按钮，用于切换开始界面和游戏场景
-	auto startItem = MenuItemImage::create("btn_start01.png", 
-		                                   "btn_start02.png", 
-		                                   CC_CALLBACK_1(WelcomeScene::menuStartCallback, this));
+	auto startItem = MenuItemImage::create("btn_start01.png",
+		"btn_start02.png",
+		CC_CALLBACK_1(WelcomeScene::menuStartCallback, this));
 	if (startItem == nullptr ||
 		startItem->getContentSize().width <= 0 ||
 		startItem->getContentSize().height <= 0)
@@ -95,9 +115,9 @@ bool WelcomeScene::init()
 	startItem->setScale(0.5);
 
 	//放置结束游戏按钮，用于结束游戏
-	auto closeItem = MenuItemImage::create("gamefinish.png", 
-		                                   "gamefinish2.png", 
-		                                   CC_CALLBACK_1(WelcomeScene::menuCloseCallback, this));
+	auto closeItem = MenuItemImage::create("gamefinish.png",
+		"gamefinish2.png",
+		CC_CALLBACK_1(WelcomeScene::menuCloseCallback, this));
 	if (closeItem == nullptr ||
 		closeItem->getContentSize().width <= 0 ||
 		closeItem->getContentSize().height <= 0)
@@ -107,22 +127,24 @@ bool WelcomeScene::init()
 	closeItem->setColor(Color3B::BLACK);
 	closeItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 5));
 	closeItem->setScale(0.3);
-	
+
 	auto menu = Menu::create(startItem, closeItem, rankingItem, bagItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
-	
-    return true;
+
+	return true;
 }
 
 void WelcomeScene::menuCloseCallback(Ref* pSender)
 {
-    //关闭游戏的回调函数
-    Director::getInstance()->end();
+	//关闭游戏的回调函数
+	Director::getInstance()->end();
 }
 
 void WelcomeScene::menuStartCallback(Ref* pSender)
 {
+	status = 0;
+	temp_score = 0;
 	auto scene = GameScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
 }
@@ -137,4 +159,8 @@ void WelcomeScene::menuBagCallback(Ref* pSender)
 {
 	auto scene = BagScene::createScene();
 	CCDirector::sharedDirector()->replaceScene(scene);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129

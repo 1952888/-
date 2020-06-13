@@ -1,8 +1,12 @@
 #ifndef  _Inkmoo_Elimination_h_
 #define  _Inkmoo_Elimination_h_
+<<<<<<< HEAD
 
 #define userDefault CCUserDefault::sharedUserDefault()
 
+=======
+#define userDefault CCUserDefault::sharedUserDefault()
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 // 定义屏幕宽高，这与所做的图片有关
 #define GAME_SCREEN_WIDTH 480
 #define GAME_SCREEN_HEIGHT 800
@@ -20,6 +24,26 @@
 
 #include "SimpleAudioEngine.h"
 
+<<<<<<< HEAD
+=======
+// 精灵的显示模式，Hor 横向消除一行，Ver纵向消除一列
+enum DisplayMode 
+{
+	DISPLAY_MODE_NORMAL = 0,
+	DISPLAY_MODE_HORIZONTAL,
+	DISPLAY_MODE_VERTICAL,
+};
+
+static const char *spriteice[TOTAL_SPRITE] = 
+{
+	"iconice1.png",
+	"iconice2.png",
+	"iconice3.png",
+	"iconice4.png",
+	"iconice5.png",
+	"iconice6.png"
+};
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
 // 普通的精灵
 static const char *spriteNormal[TOTAL_SPRITE] = {
 	"icon1.png",
@@ -30,6 +54,7 @@ static const char *spriteNormal[TOTAL_SPRITE] = {
     "icon6.png"
 };
 
+<<<<<<< HEAD
 extern int score[10];
 extern int score_num;
 
@@ -38,3 +63,25 @@ extern int plus5Num;
 
 #endif
 
+=======
+// 垂直
+static const char *sprVertical[TOTAL_SPRITE] = {
+	"icon1_z.png",
+	"icon2_z.png",
+	"icon3_z.png",
+	"icon4_z.png",
+	"icon5_z.png",
+	"icon6_z.png"
+};
+
+// 水平
+static const char *sprHorizontal[TOTAL_SPRITE] = {
+	"icon1_h.png",
+	"icon2_h.png",
+	"icon3_h.png",
+	"icon4_h.png",
+	"icon5_h.png",
+	"icon6_h.png"
+};
+#endif
+>>>>>>> 55a6950d7f73a348aa2244862f8241a9dbe20129
