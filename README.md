@@ -38,7 +38,6 @@
 进阶功能：
 ----------------
 	-本地排行榜（得分排行榜）
-	-更多类型的方块（如冰块，是无法移动的）
 	-奖励机制：如果游戏结束时分数达到一个程度，会奖励增加次数道具和四消道具，在下次游戏中使用
 	-惩罚机制：如果移动方块后发现不能消除，步数会减少
   
@@ -141,7 +140,12 @@ static const char *spriteNormal[TOTAL_SPRITE] = {
 
 	}
 	Label* labelScore = (Label*)this->getChildByTag(10);
-
 	labelScore->setString(StringUtils::format("Score: %d ", m_score));
 }
 ```
+
+项目过程中的失误：
+------------------
+	-播放背景音乐所需要用的SimpleAudioEngine中调节音量大小的函数 setBackgroundMusicVolume是空函数，若要调节背景音乐的大小需要自行补全代码。
+	-项目中成员们在使用sourcetree时，一开始因为经常各写各的，导致无法合并代码，造成手工合并代码，进行了不必要的劳动。
+	
