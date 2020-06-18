@@ -91,7 +91,7 @@ static const char *spriteNormal[TOTAL_SPRITE] = {
 ```
 	
 	
-	isAction和isFillsprite以及isTouch和update函数的使用是整个GameScene的核心
+	isAction和isFillsprite以及isTouch和update函数的使用是整个GameScene的核心，在每一帧更新这个函数
 ```c
 	void GameScene::update(float t)//更新每一帧
 {
@@ -144,8 +144,21 @@ static const char *spriteNormal[TOTAL_SPRITE] = {
 }
 ```
 
-项目过程中的失误：
+项目过程中的坑和难点：
 ------------------
 	-播放背景音乐所需要用的SimpleAudioEngine中调节音量大小的函数 setBackgroundMusicVolume是空函数，若要调节背景音乐的大小需要自行补全代码。
+	-解决过程：百度查找，通过手动添加setBackgroundMusicVolume函数来实现，具体参见如下链接							 https://blog.csdn.net/mgsweet/article/details/73303208?utm_source=blogxgwz9
 	-项目中成员们在使用sourcetree时，一开始因为经常各写各的，导致无法合并代码，造成手工合并代码，进行了不必要的劳动。
+	
+	
+项目时间线：
+------------------
+	-2020.5.15完成了WelcomeScene，缺少回调函数没写
+	-2020.5.16完成了开始和结束按钮的回调函数，开始游戏界面基本完成
+	-2020.5.17将HelloWorld改成了WelcomeScene
+	-2020.5.19完成了GameScene中的三消功能
+	-2020.5.23完成了关卡中步数的限制和出现死地图重置地图情况
+	-2020.5.31完成了背景音效，游戏音效的设置，暂停和继续bgm，以及游戏中的设置按钮
+	-2020.6.4完成了排行榜
+	-2020.6.9完成了增加次数道具和四消道具接口
 	
